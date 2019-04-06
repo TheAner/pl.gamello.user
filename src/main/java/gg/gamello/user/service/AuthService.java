@@ -5,6 +5,7 @@ import gg.gamello.user.dao.type.RoleType;
 import gg.gamello.user.dao.type.TokenType;
 import gg.gamello.user.domain.Credentials;
 import gg.gamello.user.domain.Passwords;
+import gg.gamello.user.domain.UserRegistrationForm;
 import gg.gamello.user.exception.PasswordsDontMatchException;
 import gg.gamello.user.exception.UserAlreadyExistsException;
 import gg.gamello.user.exception.UserDoesNotExistsException;
@@ -32,13 +33,13 @@ public class AuthService {
     }
 
     @Transactional
-    public User createUser(Credentials credentials) throws UserAlreadyExistsException {
-        if (userRepository.existsUserByEmailOrUsername(credentials.getEmail(), credentials.getUsername()))
+    public User createUser(UserRegistrationForm registrationForm) throws UserAlreadyExistsException {
+        if (userRepository.existsUserByEmailOrUsername(registrationForm.getEmail(), registrationForm.getUsername()))
             throw new UserAlreadyExistsException("User with credentials "  +
-                                                    credentials.getEmail() + "/" + credentials.getUsername() + "already exists");
+                                                    registrationForm.getEmail() + "/" + registrationForm.getUsername() + "already exists");
 
-        User user = new User(credentials.getUsername(), credentials.getEmail());
-        user.setPassword(passwordEncoder.encode(credentials.getPassword()));
+        User user = new User(registrationForm.getUsername(), registrationForm.getEmail());
+        user.setPassword(passwordEncoder.encode(registrationForm.getPassword()));
         user.setRoles(RoleType.getDefaultRoles());
 
         //TODO: Create new Profile
@@ -61,8 +62,8 @@ public class AuthService {
     }
 
     public User authenticateCredentials(Credentials credentials) throws UserDoesNotExistsException, UserIsNotActiveException {
-        User user = userRepository.findUserByCredentials(credentials.getUsername())
-                .orElseThrow(() -> new UserDoesNotExistsException("User with username/email " + credentials.getUsername() +
+        User user = userRepository.findUserByCredentials(credentials.getLogin())
+                .orElseThrow(() -> new UserDoesNotExistsException("User with username/email " + credentials.getLogin() +
                         " does not exists"));
 
         if(!user.isActive())
@@ -70,7 +71,7 @@ public class AuthService {
                     " is not active");
 
         if (!passwordEncoder.matches(credentials.getPassword(), user.getPassword()))
-            throw new UserDoesNotExistsException("User with username/email " + credentials.getUsername() +
+            throw new UserDoesNotExistsException("User with username/email " + credentials.getLogin() +
                                                     " does not exists");
 
         return user;

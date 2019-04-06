@@ -3,7 +3,8 @@ package gg.gamello.user.domain;
 import lombok.Data;
 
 @Data
-public class Credentials {
-    String login;
+public class UserRegistrationForm {
+    String username;
+    String email;
     String password;
 }
