@@ -36,15 +36,15 @@ public class AuthService {
     public User createUser(UserRegistrationForm registrationForm) throws UserAlreadyExistsException {
         if (userRepository.existsUserByEmailOrUsername(registrationForm.getEmail(), registrationForm.getUsername()))
             throw new UserAlreadyExistsException("User with credentials "  +
-                                                    registrationForm.getEmail() + "/" + registrationForm.getUsername() + "already exists");
+                                                    registrationForm.getEmail() + "/" + registrationForm.getUsername() + " already exists");
 
         User user = new User(registrationForm.getUsername(), registrationForm.getEmail());
         user.setPassword(passwordEncoder.encode(registrationForm.getPassword()));
         user.setRoles(RoleType.getDefaultRoles());
 
-        //TODO: Create new Profile
-
         userRepository.save(user);
+
+        //TODO: Create new Profile
 
         tokenService.createToken(user.getId(), TokenType.ACTIVATION);
         log.info("Created user with id: " + user.getId());
@@ -90,6 +90,7 @@ public class AuthService {
     @Transactional
     public void deleteUser(Long userId){
         User user = userRepository.getUserById(userId);
+        tokenService.deleteAllTokensForUser(userId);
 
         userRepository.delete(user);
         log.info("Deleted user with id:  " + user.getId());

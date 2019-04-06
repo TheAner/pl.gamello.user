@@ -59,6 +59,11 @@ public class TokenService {
                 " operation for user with id: " + userId);
     }
 
+    @Transactional
+    public void deleteAllTokensForUser(Long userId){
+        tokenRepository.deleteAllByUserId(userId);
+    }
+
     private void checkDateValid(Token token) throws OutdatedTokenException {
         if(token.getTokenExpirationDate().compareTo(new Date())<0){
             tokenRepository.delete(token);
