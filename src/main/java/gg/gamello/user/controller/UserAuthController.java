@@ -90,7 +90,7 @@ public class UserAuthController {
         return ResponseEntity.ok("Email changed");
     }
 
-    @PostMapping("/authenticate")
+    @PostMapping("/api/authenticate")
     public User authenticateCredentials(@RequestBody Credentials credentials) throws UserDoesNotExistsException, UserIsNotActiveException {
         return authService.authenticateCredentials(credentials);
     }

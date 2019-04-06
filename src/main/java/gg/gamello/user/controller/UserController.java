@@ -24,4 +24,9 @@ public class UserController {
     public User getUser() throws UserDoesNotExistsException, UserIsNotActiveException {
         return userService.getUser(requestUser.getId());
     }
+
+    @GetMapping("/api/{userId}")
+    public User getUser(@PathVariable Long userId) throws UserDoesNotExistsException, UserIsNotActiveException {
+        return userService.getUser(userId);
+    }
 }
