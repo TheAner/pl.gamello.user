@@ -4,6 +4,7 @@ import gg.gamello.user.dao.User;
 import gg.gamello.user.dao.type.TokenType;
 import gg.gamello.user.domain.Credentials;
 import gg.gamello.user.domain.Passwords;
+import gg.gamello.user.domain.UserRegistrationForm;
 import gg.gamello.user.exception.*;
 import gg.gamello.user.service.AuthService;
 import gg.gamello.user.service.TokenService;
@@ -21,8 +22,8 @@ public class UserAuthController {
     TokenService tokenService;
 
     @PostMapping()
-    public ResponseEntity<String> registerAccount(@RequestBody Credentials credentials) throws UserAlreadyExistsException {
-        User user = authService.createUser(credentials);
+    public ResponseEntity<String> registerAccount(@RequestBody UserRegistrationForm registrationForm) throws UserAlreadyExistsException {
+        User user = authService.createUser(registrationForm);
         return ResponseEntity
                 .created(UriComponentsBuilder
                         .fromUriString("/user/{id}")
