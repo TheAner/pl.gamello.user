@@ -20,7 +20,7 @@ public class UserController {
     @Resource(name = "requestUser")
     User requestUser;
 
-    @GetMapping()
+    @GetMapping("/")
     public User getUser() throws UserDoesNotExistsException, UserIsNotActiveException {
         return userService.getUser(requestUser.getId());
     }

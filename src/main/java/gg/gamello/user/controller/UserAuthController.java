@@ -21,7 +21,7 @@ public class UserAuthController {
     @Autowired
     TokenService tokenService;
 
-    @PostMapping()
+    @PostMapping("/")
     public ResponseEntity<String> registerAccount(@RequestBody UserRegistrationForm registrationForm) throws UserAlreadyExistsException {
         User user = authService.createUser(registrationForm);
         return ResponseEntity
