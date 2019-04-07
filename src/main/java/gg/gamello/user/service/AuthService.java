@@ -1,5 +1,7 @@
 package gg.gamello.user.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import gg.gamello.user.dao.User;
 import gg.gamello.user.dao.type.RoleType;
 import gg.gamello.user.dao.type.TokenType;
@@ -15,6 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestTemplate;
 
 @Slf4j
 @Service
@@ -23,13 +26,16 @@ public class AuthService {
     private final UserRepository userRepository;
     private final TokenService tokenService;
     private final PasswordEncoder passwordEncoder;
+    private RestTemplate restTemplate;
 
     public AuthService(UserRepository userRepository,
                        TokenService tokenService,
-                       PasswordEncoder passwordEncoder) {
+                       PasswordEncoder passwordEncoder,
+                       RestTemplate restTemplate) {
         this.userRepository = userRepository;
         this.tokenService = tokenService;
         this.passwordEncoder = passwordEncoder;
+        this.restTemplate = restTemplate;
     }
 
     @Transactional
@@ -44,7 +50,10 @@ public class AuthService {
 
         userRepository.save(user);
 
-        //TODO: Create new Profile
+        ObjectNode profile = new ObjectMapper().createObjectNode();
+        profile.put("userId", user.getId());
+        profile.put("visibleName", user.getUsername());
+        restTemplate.postForLocation("http://profile/api", profile);
 
         tokenService.createToken(user.getId(), TokenType.ACTIVATION);
         log.info("Created user with id: " + user.getId());
