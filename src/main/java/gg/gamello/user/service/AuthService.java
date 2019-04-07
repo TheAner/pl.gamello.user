@@ -78,10 +78,8 @@ public class AuthService {
     }
 
     @Transactional
-    public void createDeleteRequest(Long userId) throws UserDoesNotExistsException {
-        User user = userRepository.findUserById(userId)
-                .orElseThrow(() -> new UserDoesNotExistsException("User with id " + userId +
-                                                                    " does not exists"));
+    public void createDeleteRequest(Long userId){
+        User user = userRepository.getUserById(userId);
 
         tokenService.createToken(user.getId(), TokenType.DELETE);
         log.info("Created delete request for user with id:  " + user.getId());
@@ -121,10 +119,8 @@ public class AuthService {
     }
 
     @Transactional
-    public void changePassword(Long userId, Passwords passwords) throws UserDoesNotExistsException, PasswordsDontMatchException {
-        User user = userRepository.findUserById(userId)
-                .orElseThrow(() -> new UserDoesNotExistsException("User with id " + userId +
-                        " does not exists"));
+    public void changePassword(Long userId, Passwords passwords) throws PasswordsDontMatchException {
+        User user = userRepository.getUserById(userId);
 
         if (!passwordEncoder.matches(passwords.getOldPassword(), user.getPassword()))
             throw new PasswordsDontMatchException("Passwords don't match");
@@ -137,10 +133,8 @@ public class AuthService {
     }
 
     @Transactional
-    public void createEmailChangeRequest(Long userId) throws UserDoesNotExistsException {
-        User user = userRepository.findUserById(userId)
-                .orElseThrow(() -> new UserDoesNotExistsException("User with id " + userId +
-                        " does not exists"));
+    public void createEmailChangeRequest(Long userId){
+        User user = userRepository.getUserById(userId);
 
         tokenService.createToken(user.getId(), TokenType.EMAIL);
 
