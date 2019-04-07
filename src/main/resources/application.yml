@@ -2,7 +2,7 @@ spring:
     application:
         name: user
     datasource:
-        url: jdbc:mysql://mysql0.mydevil.net:3306/m14997_g_user?useSSL=false&characterEncoding=utf-8&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC
+        url: jdbc:mysql://mysql0.mydevil.net:3306/m14997_g_d_user?useSSL=false&characterEncoding=utf-8&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC
         username: m14997_g_user
         password: wf1dp5mYBTAqhfPbErGa
     jpa:

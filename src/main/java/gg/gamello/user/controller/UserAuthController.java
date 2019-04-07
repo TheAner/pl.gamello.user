@@ -59,7 +59,7 @@ public class UserAuthController {
     }
 
     @PostMapping("/recover")
-    public ResponseEntity<String> createRecoverRequest(@RequestBody String email) throws UserDoesNotExistsException, UserIsNotActiveException {
+    public ResponseEntity<String> createRecoverRequest(@RequestBody String email){
         authService.createRecoverRequest(email);
         return ResponseEntity.ok("User recover request sent");
     }
@@ -80,7 +80,7 @@ public class UserAuthController {
     }
 
     @PostMapping("/change/email")
-    public ResponseEntity<String> createEmailChangeRequest(){
+    public ResponseEntity<String> createEmailChangeRequest(@RequestBody String email){
         authService.createEmailChangeRequest(requestUser.getId());
         return ResponseEntity.ok("User email change request sent");
     }

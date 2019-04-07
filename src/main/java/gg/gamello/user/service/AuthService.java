@@ -104,16 +104,21 @@ public class AuthService {
     }
 
     @Transactional
-    public void createRecoverRequest(String email) throws UserDoesNotExistsException, UserIsNotActiveException {
-        User user = userRepository.findUserByEmail(email)
-                .orElseThrow(() -> new UserDoesNotExistsException("User with email " + email +
-                                                                    " does not exists"));
-        if(!user.isActive())
-            throw new UserIsNotActiveException("User with email " + email +
-                                                " is not active");
+    public void createRecoverRequest(String email){
+        try {
+            User user = userRepository.findUserByEmail(email)
+                    .orElseThrow(() -> new UserDoesNotExistsException("User with email " + email +
+                            " does not exists"));
+            if(!user.isActive())
+                throw new UserIsNotActiveException("User with email " + email +
+                        " is not active");
 
-        tokenService.createToken(user.getId(), TokenType.PASSWORD);
-        log.info("Created recover request for user with id:  " + user.getId());
+            tokenService.createToken(user.getId(), TokenType.PASSWORD);
+            log.info("Created recover request for user with id:  " + user.getId());
+
+        } catch (UserDoesNotExistsException | UserIsNotActiveException e) {
+            log.error(e.getMessage());
+        }
     }
 
     @Transactional
