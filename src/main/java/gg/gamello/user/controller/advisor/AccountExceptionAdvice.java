@@ -34,7 +34,7 @@ public class AccountExceptionAdvice {
     @ResponseBody
     @ExceptionHandler(UserIsNotActiveException.class)
     @ResponseStatus(HttpStatus.LOCKED)
-    String accountIsNotActiveHandler(UserAlreadyExistsException ex) {
+    String accountIsNotActiveHandler(UserIsNotActiveException ex) {
         log.error(ex.getMessage());
         return ex.getMessage();
     }
