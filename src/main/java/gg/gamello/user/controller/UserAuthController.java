@@ -94,6 +94,15 @@ public class UserAuthController {
         return ResponseEntity.ok("Email changed");
     }
 
+    @PostMapping("/validate/{typeOfToken}/{userId}")
+    public ResponseEntity<String> validateToken(@PathVariable String typeOfToken,
+                                                @PathVariable Long userId,
+                                                @RequestParam(value = "token") String token) throws IllegalArgumentException, TokenException {
+        TokenType tokenType = TokenType.valueOf(typeOfToken);
+        tokenService.confirmToken(userId, tokenType, token);
+        return ResponseEntity.ok("Correct token");
+    }
+
     @PostMapping("/api/authenticate")
     public User authenticateCredentials(@RequestBody Credentials credentials) throws UserDoesNotExistsException, UserIsNotActiveException {
         return authService.authenticateCredentials(credentials);

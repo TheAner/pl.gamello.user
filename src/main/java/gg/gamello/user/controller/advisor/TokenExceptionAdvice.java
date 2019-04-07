@@ -22,9 +22,9 @@ public class TokenExceptionAdvice {
     }
 
     @ResponseBody
-    @ExceptionHandler(value = {InvalidTypeOfTokenException.class})
+    @ExceptionHandler(value = {InvalidTypeOfTokenException.class, IllegalArgumentException.class})
     @ResponseStatus(HttpStatus.FORBIDDEN)
-    String invalidTypeOfTokenHandler(InvalidTypeOfTokenException ex) {
+    String invalidTypeOfTokenHandler(Exception ex) {
         log.error(ex.getMessage());
         return ex.getMessage();
     }
