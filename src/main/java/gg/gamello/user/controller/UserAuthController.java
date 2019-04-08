@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.annotation.Resource;
+import java.net.UnknownHostException;
 
 @RestController
 public class UserAuthController {
@@ -27,7 +28,7 @@ public class UserAuthController {
     User requestUser;
 
     @PostMapping("/")
-    public ResponseEntity<String> registerAccount(@RequestBody UserRegistrationForm registrationForm) throws UserAlreadyExistsException {
+    public ResponseEntity<String> registerAccount(@RequestBody UserRegistrationForm registrationForm) throws UserAlreadyExistsException, UnknownHostException {
         User user = authService.createUser(registrationForm);
         return ResponseEntity
                 .created(UriComponentsBuilder

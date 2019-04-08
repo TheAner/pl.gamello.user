@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
+import java.net.UnknownHostException;
+
 @Slf4j
 @ControllerAdvice
 public class AccountExceptionAdvice {
@@ -45,5 +47,13 @@ public class AccountExceptionAdvice {
     String passwordsDontMatchHandler(PasswordsDontMatchException ex) {
         log.error(ex.getMessage());
         return ex.getMessage();
+    }
+
+    @ResponseBody
+    @ExceptionHandler(UnknownHostException.class)
+    @ResponseStatus(HttpStatus.FAILED_DEPENDENCY)
+    String ServiceExeptionHandler(UnknownHostException ex) {
+        log.error(ex.getMessage()+" connection failed");
+        return "Service is currently unavailable";
     }
 }

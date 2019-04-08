@@ -19,6 +19,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
+import java.net.UnknownHostException;
+
 @Slf4j
 @Service
 public class AuthService {
@@ -39,7 +41,7 @@ public class AuthService {
     }
 
     @Transactional
-    public User createUser(UserRegistrationForm registrationForm) throws UserAlreadyExistsException {
+    public User createUser(UserRegistrationForm registrationForm) throws UserAlreadyExistsException, UnknownHostException {
         if (userRepository.existsUserByEmailOrUsername(registrationForm.getEmail(), registrationForm.getUsername()))
             throw new UserAlreadyExistsException("User with credentials "  +
                                                     registrationForm.getEmail() + "/" + registrationForm.getUsername() + " already exists");
@@ -48,17 +50,21 @@ public class AuthService {
         user.setPassword(passwordEncoder.encode(registrationForm.getPassword()));
         user.setRoles(RoleType.getDefaultRoles());
 
+        createAndSaveProfile(user);
         userRepository.save(user);
-
-        ObjectNode profile = new ObjectMapper().createObjectNode();
-        profile.put("userId", user.getId());
-        profile.put("visibleName", user.getUsername());
-        restTemplate.postForLocation("http://profile/api", profile);
 
         tokenService.createToken(user.getId(), TokenType.ACTIVATION);
         log.info("Created user with id: " + user.getId());
 
         return user;
+    }
+
+    @Transactional
+    public void createAndSaveProfile(User user) throws UnknownHostException {
+        ObjectNode profile = new ObjectMapper().createObjectNode();
+        profile.put("userId", user.getId());
+        profile.put("visibleName", user.getUsername());
+        restTemplate.postForLocation("http://profile/api", profile);
     }
 
     @Transactional
