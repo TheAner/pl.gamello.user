@@ -13,7 +13,6 @@ import org.apache.commons.lang.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 
@@ -33,7 +32,6 @@ public class TokenService {
     }
 
     @Async
-    @Transactional
     public void createToken(Long userId, TokenType tokenType){
         TokenFactory tokenFactory = new TokenFactory(tokenType);
         Token token = tokenFactory.createFor(userId);
@@ -43,7 +41,6 @@ public class TokenService {
                 " token for user with id: " + userId);
     }
 
-    @Transactional
     public void confirmToken(Long userId, TokenType tokenType, String tokenValue) throws TokenException {
         Token token = tokenRepository.findByUserIdAndValue(userId, tokenValue)
                 .orElseThrow(()-> new TokenNotFoundException("Token: {" + tokenValue +
@@ -59,8 +56,7 @@ public class TokenService {
                 " operation for user with id: " + userId);
     }
 
-    @Transactional
-    public void deleteAllTokensForUser(Long userId){
+    void deleteAllTokensForUser(Long userId){
         tokenRepository.deleteAllByUserId(userId);
     }
 

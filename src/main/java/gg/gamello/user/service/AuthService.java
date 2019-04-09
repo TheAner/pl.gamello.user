@@ -2,6 +2,7 @@ package gg.gamello.user.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import gg.gamello.user.dao.Role;
 import gg.gamello.user.dao.User;
 import gg.gamello.user.dao.type.RoleType;
 import gg.gamello.user.dao.type.TokenType;
@@ -20,9 +21,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
-import java.net.UnknownHostException;
-import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 
 @Slf4j
 @Service
@@ -54,7 +54,7 @@ public class AuthService {
 
         User user = new User(registrationForm.getUsername(), registrationForm.getEmail());
         user.setPassword(passwordEncoder.encode(registrationForm.getPassword()));
-        user.setRoles(Collections.singletonList(roleRepository.findByRole(RoleType.USER)));
+        user.setRoles(getDefaultRoles());
 
         userRepository.save(user);
 
@@ -66,7 +66,11 @@ public class AuthService {
         return user;
     }
 
-    public void createAndSaveProfile(User user) throws UnknownHostException {
+    private List<Role> getDefaultRoles() {
+        return Collections.singletonList(roleRepository.findByRole(RoleType.USER));
+    }
+
+    private void createProfileRequest(User user) throws RestClientException {
         ObjectNode profile = new ObjectMapper().createObjectNode();
         profile.put("userId", user.getId());
         profile.put("visibleName", user.getUsername());
