@@ -8,9 +8,8 @@ import org.hibernate.validator.constraints.Length;
 import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
+import java.util.Collection;
 import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
 
 @Entity
 @Table(
@@ -41,11 +40,11 @@ public class User {
     private Date registerDate = new Date();
 
     @ManyToMany(fetch = FetchType.EAGER,
-                cascade = CascadeType.ALL)
+            cascade = CascadeType.ALL)
     @JoinTable(name = "User_Role",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "role_id"))
-    private Set<Role> roles =  new HashSet<>();
+            joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"))
+    private Collection<Role> roles;
 
     public User(@NotBlank String username, @NotBlank String email) {
         this.username = username;

@@ -12,6 +12,7 @@ import gg.gamello.user.exception.PasswordsDontMatchException;
 import gg.gamello.user.exception.UserAlreadyExistsException;
 import gg.gamello.user.exception.UserDoesNotExistsException;
 import gg.gamello.user.exception.UserIsNotActiveException;
+import gg.gamello.user.repository.RoleRepository;
 import gg.gamello.user.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -20,27 +21,32 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
 import java.net.UnknownHostException;
+import java.util.Arrays;
+import java.util.Collections;
 
 @Slf4j
 @Service
 public class AuthService {
 
     private final UserRepository userRepository;
+    private final RoleRepository roleRepository;
     private final TokenService tokenService;
     private final PasswordEncoder passwordEncoder;
     private RestTemplate restTemplate;
 
     public AuthService(UserRepository userRepository,
+                       RoleRepository roleRepository,
                        TokenService tokenService,
                        PasswordEncoder passwordEncoder,
                        RestTemplate restTemplate) {
         this.userRepository = userRepository;
+        this.roleRepository = roleRepository;
         this.tokenService = tokenService;
         this.passwordEncoder = passwordEncoder;
         this.restTemplate = restTemplate;
     }
 
-    @Transactional
+    @Transactional//(rollbackFor = {UnknownHostException.class})
     public User createUser(UserRegistrationForm registrationForm) throws UserAlreadyExistsException, UnknownHostException {
         if (userRepository.existsUserByEmailOrUsername(registrationForm.getEmail(), registrationForm.getUsername()))
             throw new UserAlreadyExistsException("User with credentials "  +
@@ -48,10 +54,11 @@ public class AuthService {
 
         User user = new User(registrationForm.getUsername(), registrationForm.getEmail());
         user.setPassword(passwordEncoder.encode(registrationForm.getPassword()));
-        user.setRoles(RoleType.getDefaultRoles());
+        user.setRoles(Collections.singletonList(roleRepository.findByRole(RoleType.USER)));
+
+        userRepository.save(user);
 
         createAndSaveProfile(user);
-        userRepository.save(user);
 
         tokenService.createToken(user.getId(), TokenType.ACTIVATION);
         log.info("Created user with id: " + user.getId());
@@ -59,7 +66,6 @@ public class AuthService {
         return user;
     }
 
-    @Transactional
     public void createAndSaveProfile(User user) throws UnknownHostException {
         ObjectNode profile = new ObjectMapper().createObjectNode();
         profile.put("userId", user.getId());

@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.Collection;
 
 @Entity
 @Table(
@@ -19,6 +20,9 @@ public class Role {
 
     @Enumerated(EnumType.STRING)
     private RoleType role;
+
+    @ManyToMany(mappedBy = "roles")
+    private Collection<User> users;
 
     public Role(RoleType role) {
         this.role = role;
