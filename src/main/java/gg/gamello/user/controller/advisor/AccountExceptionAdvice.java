@@ -10,8 +10,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
-
-import java.net.UnknownHostException;
+import org.springframework.web.client.RestClientException;
 
 @Slf4j
 @ControllerAdvice
@@ -50,9 +49,9 @@ public class AccountExceptionAdvice {
     }
 
     @ResponseBody
-    @ExceptionHandler(UnknownHostException.class)
+    @ExceptionHandler(RestClientException.class)
     @ResponseStatus(HttpStatus.FAILED_DEPENDENCY)
-    String ServiceExeptionHandler(UnknownHostException ex) {
+    String ServiceExceptionHandler(RestClientException ex) {
         log.error(ex.getMessage()+" connection failed");
         return "Service is currently unavailable";
     }

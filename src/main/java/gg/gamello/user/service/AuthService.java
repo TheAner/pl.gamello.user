@@ -18,7 +18,7 @@ import gg.gamello.user.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.Collections;
@@ -32,7 +32,7 @@ public class AuthService {
     private final RoleRepository roleRepository;
     private final TokenService tokenService;
     private final PasswordEncoder passwordEncoder;
-    private RestTemplate restTemplate;
+    private final RestTemplate restTemplate;
 
     public AuthService(UserRepository userRepository,
                        RoleRepository roleRepository,
@@ -46,8 +46,8 @@ public class AuthService {
         this.restTemplate = restTemplate;
     }
 
-    @Transactional//(rollbackFor = {UnknownHostException.class})
-    public User createUser(UserRegistrationForm registrationForm) throws UserAlreadyExistsException, UnknownHostException {
+
+    public User createUser(UserRegistrationForm registrationForm) throws UserAlreadyExistsException, RestClientException {
         if (userRepository.existsUserByEmailOrUsername(registrationForm.getEmail(), registrationForm.getUsername()))
             throw new UserAlreadyExistsException("User with credentials "  +
                                                     registrationForm.getEmail() + "/" + registrationForm.getUsername() + " already exists");
@@ -58,11 +58,15 @@ public class AuthService {
 
         userRepository.save(user);
 
-        createAndSaveProfile(user);
+        try{
+            createProfileRequest(user);
+        }catch(RestClientException ex){
+            userRepository.delete(user);
+            throw ex;
+        }
 
         tokenService.createToken(user.getId(), TokenType.ACTIVATION);
         log.info("Created user with id: " + user.getId());
-
         return user;
     }
 
@@ -77,7 +81,6 @@ public class AuthService {
         restTemplate.postForLocation("http://profile/api", profile);
     }
 
-    @Transactional
     public void activateUser(Long userId) {
         User user = userRepository.getUserById(userId);
 
@@ -102,7 +105,6 @@ public class AuthService {
         return user;
     }
 
-    @Transactional
     public void createDeleteRequest(Long userId){
         User user = userRepository.getUserById(userId);
 
@@ -110,7 +112,6 @@ public class AuthService {
         log.info("Created delete request for user with id:  " + user.getId());
     }
 
-    @Transactional
     public void deleteUser(Long userId){
         User user = userRepository.getUserById(userId);
         tokenService.deleteAllTokensForUser(userId);
@@ -119,7 +120,6 @@ public class AuthService {
         log.info("Deleted user with id:  " + user.getId());
     }
 
-    @Transactional
     public void createRecoverRequest(String email){
         try {
             User user = userRepository.findUserByEmail(email)
@@ -137,7 +137,6 @@ public class AuthService {
         }
     }
 
-    @Transactional
     public void recoverUser(Long userId, String password) {
         User user = userRepository.getUserById(userId);
 
@@ -148,7 +147,6 @@ public class AuthService {
         log.info("Changed password for user with id:  " + user.getId());
     }
 
-    @Transactional
     public void changePassword(Long userId, Passwords passwords) throws PasswordsDontMatchException {
         User user = userRepository.getUserById(userId);
 
@@ -162,7 +160,6 @@ public class AuthService {
         log.info("Changed password for user with id:  " + user.getId());
     }
 
-    @Transactional
     public void createEmailChangeRequest(Long userId){
         User user = userRepository.getUserById(userId);
 
@@ -171,7 +168,6 @@ public class AuthService {
         log.info("Created email change request for user with id:  " + user.getId());
     }
 
-    @Transactional
     public void changeEmail(Long userId, String email) throws UserDoesNotExistsException {
         User user = userRepository.findUserById(userId)
                 .orElseThrow(() -> new UserDoesNotExistsException("User with id " + userId +
