@@ -3,11 +3,6 @@ spring:
         name: user
     profiles:
         active: prod
-    jpa:
-        show-sql: true
-        properties:
-            hibernate:
-                format_sql: true
 token:
     chars-length: 18
     number-of-sections: 4
