@@ -1,6 +1,7 @@
 package gg.gamello.user.service;
 
 import gg.gamello.user.dao.User;
+import gg.gamello.user.dao.type.Language;
 import gg.gamello.user.exception.UserDoesNotExistsException;
 import gg.gamello.user.exception.UserIsNotActiveException;
 import gg.gamello.user.repository.UserRepository;
@@ -27,5 +28,12 @@ public class UserService {
 
         log.info("Requested user with id: " + user.getId());
         return user;
+    }
+
+    public void changeLanguage(Long id, String language){
+        User user = userRepository.getUserById(id);
+        user.setLanguage(Language.mapLanguage(language));
+
+        userRepository.save(user);
     }
 }

@@ -2,6 +2,7 @@ package gg.gamello.user.service;
 
 import gg.gamello.user.dao.Role;
 import gg.gamello.user.dao.User;
+import gg.gamello.user.dao.type.Language;
 import gg.gamello.user.dao.type.RoleType;
 import gg.gamello.user.dao.type.TokenType;
 import gg.gamello.user.domain.Credentials;
@@ -47,7 +48,7 @@ public class AuthService {
         User user = new User(registrationForm.getUsername(), registrationForm.getEmail());
         user.setPassword(passwordEncoder.encode(registrationForm.getPassword()));
         user.setRoles(getDefaultRoles());
-        user.setLanguage(registrationForm.getLanguage());
+        user.setLanguage(Language.mapLanguage(registrationForm.getLanguage()));
 
         userRepository.save(user);
 

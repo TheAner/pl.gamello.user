@@ -1,6 +1,7 @@
 package gg.gamello.user.dao;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import gg.gamello.user.dao.type.Language;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.Length;
@@ -39,8 +40,8 @@ public class User {
 
     private Date registerDate = new Date();
 
-    @NotBlank
-    private String language;
+    @Enumerated(EnumType.STRING)
+    private Language language;
 
     @ManyToMany(fetch = FetchType.EAGER,
             cascade = CascadeType.ALL)
