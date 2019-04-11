@@ -47,6 +47,7 @@ public class AuthService {
         User user = new User(registrationForm.getUsername(), registrationForm.getEmail());
         user.setPassword(passwordEncoder.encode(registrationForm.getPassword()));
         user.setRoles(getDefaultRoles());
+        user.setLanguage(registrationForm.getLanguage());
 
         userRepository.save(user);
 

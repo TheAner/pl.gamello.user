@@ -39,6 +39,9 @@ public class User {
 
     private Date registerDate = new Date();
 
+    @NotBlank
+    private String language;
+
     @ManyToMany(fetch = FetchType.EAGER,
             cascade = CascadeType.ALL)
     @JoinTable(name = "User_Role",
