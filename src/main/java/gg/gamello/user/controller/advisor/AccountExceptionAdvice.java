@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.client.RestClientException;
 
 @Slf4j
 @ControllerAdvice
@@ -46,13 +45,5 @@ public class AccountExceptionAdvice {
     String passwordsDontMatchHandler(PasswordsDontMatchException ex) {
         log.error(ex.getMessage());
         return ex.getMessage();
-    }
-
-    @ResponseBody
-    @ExceptionHandler(RestClientException.class)
-    @ResponseStatus(HttpStatus.FAILED_DEPENDENCY)
-    String ServiceExceptionHandler(RestClientException ex) {
-        log.error(ex.getMessage()+" connection failed");
-        return "Service is currently unavailable";
     }
 }

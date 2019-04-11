@@ -11,7 +11,6 @@ import gg.gamello.user.service.TokenService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.RestClientException;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.annotation.Resource;
@@ -28,7 +27,7 @@ public class UserAuthController {
     User requestUser;
 
     @PostMapping("/")
-    public ResponseEntity<String> registerAccount(@RequestBody UserRegistrationForm registrationForm) throws UserAlreadyExistsException, RestClientException {
+    public ResponseEntity<String> registerAccount(@RequestBody UserRegistrationForm registrationForm) throws UserAlreadyExistsException{
         User user = authService.createUser(registrationForm);
         return ResponseEntity
                 .created(UriComponentsBuilder

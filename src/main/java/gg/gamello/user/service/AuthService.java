@@ -1,7 +1,5 @@
 package gg.gamello.user.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import gg.gamello.user.dao.Role;
 import gg.gamello.user.dao.User;
 import gg.gamello.user.dao.type.RoleType;
@@ -18,8 +16,6 @@ import gg.gamello.user.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestClientException;
-import org.springframework.web.client.RestTemplate;
 
 import java.util.Collections;
 import java.util.List;
@@ -32,38 +28,27 @@ public class AuthService {
     private final RoleRepository roleRepository;
     private final TokenService tokenService;
     private final PasswordEncoder passwordEncoder;
-    private final RestTemplate restTemplate;
 
     public AuthService(UserRepository userRepository,
                        RoleRepository roleRepository,
                        TokenService tokenService,
-                       PasswordEncoder passwordEncoder,
-                       RestTemplate restTemplate) {
+                       PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
         this.tokenService = tokenService;
         this.passwordEncoder = passwordEncoder;
-        this.restTemplate = restTemplate;
     }
 
-
-    public User createUser(UserRegistrationForm registrationForm) throws UserAlreadyExistsException, RestClientException {
+    public User createUser(UserRegistrationForm registrationForm) throws UserAlreadyExistsException {
         if (userRepository.existsUserByEmailOrUsername(registrationForm.getEmail(), registrationForm.getUsername()))
             throw new UserAlreadyExistsException("User with credentials "  +
-                                                    registrationForm.getEmail() + "/" + registrationForm.getUsername() + " already exists");
+                    registrationForm.getEmail() + "/" + registrationForm.getUsername() + " already exists");
 
         User user = new User(registrationForm.getUsername(), registrationForm.getEmail());
         user.setPassword(passwordEncoder.encode(registrationForm.getPassword()));
         user.setRoles(getDefaultRoles());
 
         userRepository.save(user);
-
-        try{
-            createProfileRequest(user);
-        }catch(RestClientException ex){
-            userRepository.delete(user);
-            throw ex;
-        }
 
         tokenService.createToken(user.getId(), TokenType.ACTIVATION);
         log.info("Created user with id: " + user.getId());
@@ -72,13 +57,6 @@ public class AuthService {
 
     private List<Role> getDefaultRoles() {
         return Collections.singletonList(roleRepository.findByRole(RoleType.USER));
-    }
-
-    private void createProfileRequest(User user) throws RestClientException {
-        ObjectNode profile = new ObjectMapper().createObjectNode();
-        profile.put("userId", user.getId());
-        profile.put("visibleName", user.getUsername());
-        restTemplate.postForLocation("http://profile/api", profile);
     }
 
     public void activateUser(Long userId) {
