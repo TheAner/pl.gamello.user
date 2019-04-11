@@ -1,0 +1,17 @@
+spring:
+    datasource:
+        url: jdbc:mysql://mysql0.mydevil.net:3306/m14997_gd_usr?useSSL=false&characterEncoding=utf-8&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC
+        username: m14997_gd_usr
+        password: Mc2CWd42sGDMuREQb7DwfA8LKyc2rKGE
+    jpa:
+        hibernate:
+            ddl-auto: create-drop
+server:
+    port: 8080
+eureka:
+    client:
+        service-url:
+            defaultZone: http://54.36.112.122:8761/eureka/
+    instance:
+        lease-expiration-duration-in-seconds: 10
+        lease-renewal-interval-in-seconds: 5

@@ -1,22 +1,11 @@
 spring:
     application:
         name: user
-    datasource:
-        url: jdbc:mysql://mysql0.mydevil.net:3306/m14997_g_d_user?useSSL=false&characterEncoding=utf-8&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC
-        username: m14997_g_user
-        password: wf1dp5mYBTAqhfPbErGa
     jpa:
-        hibernate:
-            ddl-auto: create-drop
-server:
-    port: 8080
-eureka:
-    client:
-        service-url:
-            defaultZone: http://node001.de.ovh.network.gamello.gg:8761/eureka/
-    instance:
-        lease-expiration-duration-in-seconds: 25
-        lease-renewal-interval-in-seconds: 15
+        show-sql: true
+        properties:
+            hibernate:
+                format_sql: true
 token:
     chars-length: 18
     number-of-sections: 4

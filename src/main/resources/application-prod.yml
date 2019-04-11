@@ -1,0 +1,17 @@
+spring:
+    datasource:
+        url: jdbc:mysql://mysql0.mydevil.net:3306/m14997_gp_usr?useSSL=false&characterEncoding=utf-8&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC
+        username: m14997_gp_usr
+        password: 8MQAXBT5d5rL69vyjR39WBnWJM4NdGqr
+    jpa:
+        hibernate:
+            ddl-auto: update
+server:
+    port: 5000
+eureka:
+    client:
+        service-url:
+            defaultZone:  http://node001.de.ovh.network.gamello.gg:8761/eureka/
+    instance:
+        lease-expiration-duration-in-seconds: 25
+        lease-renewal-interval-in-seconds: 15
