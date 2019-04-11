@@ -1,6 +1,8 @@
 spring:
     application:
         name: user
+    profiles:
+        active: prod
     jpa:
         show-sql: true
         properties:
