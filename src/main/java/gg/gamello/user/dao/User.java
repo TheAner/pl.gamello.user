@@ -9,6 +9,7 @@ import org.hibernate.validator.constraints.Length;
 import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
 import java.util.Collection;
 import java.util.Date;
 
@@ -24,17 +25,18 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotBlank
-    @Length(min = 3, max = 24)
-    private String username;
+    @NotEmpty(message = "Username can not be empty")
+    @Length(min = 3, max = 24, message = "Username must be between {min} and {max} characters long")
+    String username;
 
-    @NotBlank
-    @Email
-    private String email;
+    @NotEmpty(message = "Email can not be empty")
+    @Email(message = "Email should be correctly")
+    String email;
 
     @JsonIgnore
-    @NotBlank
-    private String password;
+    @NotEmpty(message = "Password can not be empty")
+    @Length(min = 8, max = 64, message = "Password must be between {min} and {max} characters long")
+    String password;
 
     private boolean active = false;
 

@@ -11,7 +11,7 @@ server:
 eureka:
     client:
         service-url:
-            defaultZone:  http://node001.de.ovh.network.gamello.gg:8761/eureka/
+            defaultZone: http://node001.de.ovh.network.gamello.gg:8761/eureka/
     instance:
         lease-expiration-duration-in-seconds: 25
         lease-renewal-interval-in-seconds: 15
