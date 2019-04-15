@@ -10,12 +10,12 @@
     </parent>
     <groupId>gg.gamello</groupId>
     <artifactId>user</artifactId>
-    <version>0.1-DEV</version>
+    <version>0.1.2</version>
     <name>user</name>
     <description>Gamello User microservice responsible for user data</description>
 
     <properties>
-        <java.version>11</java.version>
+        <java.version>8</java.version>
         <spring-cloud.version>Greenwich.SR1</spring-cloud.version>
     </properties>
 
