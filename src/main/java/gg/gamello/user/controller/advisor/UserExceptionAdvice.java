@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 
 @Slf4j
 @ControllerAdvice
-public class AccountExceptionAdvice {
+public class UserExceptionAdvice {
 
     @ResponseBody
     @ExceptionHandler(UserDoesNotExistsException.class)
