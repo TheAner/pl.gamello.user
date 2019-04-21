@@ -1,11 +1,13 @@
 package gg.gamello.user.service;
 
 import gg.gamello.user.dao.Role;
+import gg.gamello.user.dao.Token;
 import gg.gamello.user.dao.User;
 import gg.gamello.user.dao.type.Language;
 import gg.gamello.user.dao.type.RoleType;
 import gg.gamello.user.dao.type.TokenType;
 import gg.gamello.user.domain.Credentials;
+import gg.gamello.user.domain.Email;
 import gg.gamello.user.domain.Passwords;
 import gg.gamello.user.domain.UserRegistrationForm;
 import gg.gamello.user.exception.PasswordsDontMatchException;
@@ -17,6 +19,7 @@ import gg.gamello.user.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.Collections;
 import java.util.List;
@@ -29,15 +32,18 @@ public class AuthService {
     private final RoleRepository roleRepository;
     private final TokenService tokenService;
     private final PasswordEncoder passwordEncoder;
+    private final RestTemplate restTemplate;
 
     public AuthService(UserRepository userRepository,
                        RoleRepository roleRepository,
                        TokenService tokenService,
-                       PasswordEncoder passwordEncoder) {
+                       PasswordEncoder passwordEncoder,
+                       RestTemplate restTemplate) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
         this.tokenService = tokenService;
         this.passwordEncoder = passwordEncoder;
+        this.restTemplate = restTemplate;
     }
 
     public User createUser(UserRegistrationForm registrationForm) throws UserAlreadyExistsException {
@@ -52,7 +58,13 @@ public class AuthService {
 
         userRepository.save(user);
 
-        tokenService.createToken(user.getId(), TokenType.ACTIVATION);
+        Token token = tokenService.createToken(user.getId(), TokenType.ACTIVATION);
+
+        Email.createMailForUser(user)
+                .useTemplateForToken(token)
+                .addData("username", user.getUsername())
+                .sendWithLoadBalance(restTemplate);
+
         log.info("Created user with id: " + user.getId());
         return user;
     }

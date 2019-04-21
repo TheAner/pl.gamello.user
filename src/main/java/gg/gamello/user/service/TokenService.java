@@ -31,14 +31,14 @@ public class TokenService {
         this.tokenRepository = tokenRepository;
     }
 
-    @Async
-    public void createToken(Long userId, TokenType tokenType){
+    public Token createToken(Long userId, TokenType tokenType){
         TokenFactory tokenFactory = new TokenFactory(tokenType);
         Token token = tokenFactory.createFor(userId);
         tokenRepository.save(token);
 
         log.info("Created " + tokenType.name() +
                 " token for user with id: " + userId);
+        return token;
     }
 
     public void confirmToken(Long userId, TokenType tokenType, String tokenValue) throws TokenException {
