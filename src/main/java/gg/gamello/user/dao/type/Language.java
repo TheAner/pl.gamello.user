@@ -3,7 +3,7 @@ package gg.gamello.user.dao.type;
 public enum Language {
     pl,
     en,
-    ex;
+    es;
 
     private static Language getDefaultLanguage(){
         return Language.en;
