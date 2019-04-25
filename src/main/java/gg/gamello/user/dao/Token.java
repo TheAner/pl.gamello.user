@@ -8,6 +8,7 @@ import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.util.Date;
+import java.util.UUID;
 
 
 @Entity
@@ -23,7 +24,7 @@ public class Token {
     private Long id;
 
     @NotNull
-    private Long userId;
+    private UUID userId;
 
     @Enumerated(EnumType.STRING)
     private TokenType typeOfToken;
@@ -33,7 +34,7 @@ public class Token {
     @NotBlank
     private String value;
 
-    public Token(Long userId, TokenType typeOfToken, @NotBlank String value) {
+    public Token(UUID userId, TokenType typeOfToken, @NotBlank String value) {
         this.userId = userId;
         this.typeOfToken = typeOfToken;
         this.value = value;

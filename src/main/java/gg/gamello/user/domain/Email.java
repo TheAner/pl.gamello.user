@@ -5,17 +5,16 @@ import gg.gamello.user.dao.User;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.Setter;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.client.RestTemplate;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 @Setter(AccessLevel.PRIVATE)
 @Data
 public class Email {
 
-    private Long userId;
+    private UUID userId;
     private String email;
     private String template;
     private String language;
@@ -39,10 +38,5 @@ public class Email {
         this.setTemplate("user." + token.getTypeOfToken().toString().toLowerCase());
         this.addData("token", token.getValue());
         return this;
-    }
-
-
-    public ResponseEntity sendWithLoadBalance(RestTemplate restTemplate){
-        return restTemplate.postForEntity("http://email/api/transactional/single", this, String.class);
     }
 }

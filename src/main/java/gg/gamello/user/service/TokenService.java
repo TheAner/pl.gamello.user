@@ -11,10 +11,12 @@ import gg.gamello.user.repository.TokenRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
+import java.util.UUID;
 
 @Slf4j
 @Service
@@ -31,7 +33,8 @@ public class TokenService {
         this.tokenRepository = tokenRepository;
     }
 
-    public Token createToken(Long userId, TokenType tokenType){
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public Token createToken(UUID userId, TokenType tokenType){
         TokenFactory tokenFactory = new TokenFactory(tokenType);
         Token token = tokenFactory.createFor(userId);
         tokenRepository.save(token);
@@ -41,7 +44,7 @@ public class TokenService {
         return token;
     }
 
-    public void confirmToken(Long userId, TokenType tokenType, String tokenValue) throws TokenException {
+    public void confirmToken(UUID userId, TokenType tokenType, String tokenValue) throws TokenException {
         Token token = tokenRepository.findByUserIdAndValue(userId, tokenValue)
                 .orElseThrow(()-> new TokenNotFoundException("Token: {" + tokenValue +
                                                             "} for user with id: " + userId +
@@ -56,7 +59,7 @@ public class TokenService {
                 " operation for user with id: " + userId);
     }
 
-    void deleteAllTokensForUser(Long userId){
+    void deleteAllTokensForUser(UUID userId){
         tokenRepository.deleteAllByUserId(userId);
     }
 
@@ -83,7 +86,7 @@ public class TokenService {
             this.tokenType = tokenType;
         }
 
-        Token createFor(Long userId){
+        Token createFor(UUID userId){
             String tokenValue = generateToken(SECTIONS, CHARS);
             Token token = new Token(userId, tokenType, tokenValue);
             token.setTokenExpirationDate(getExpirationDate());

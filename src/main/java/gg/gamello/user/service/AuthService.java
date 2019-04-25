@@ -1,79 +1,38 @@
 package gg.gamello.user.service;
 
-import gg.gamello.user.dao.Role;
-import gg.gamello.user.dao.Token;
 import gg.gamello.user.dao.User;
-import gg.gamello.user.dao.type.Language;
-import gg.gamello.user.dao.type.RoleType;
 import gg.gamello.user.dao.type.TokenType;
 import gg.gamello.user.domain.Credentials;
-import gg.gamello.user.domain.Email;
 import gg.gamello.user.domain.Passwords;
-import gg.gamello.user.domain.UserRegistrationForm;
 import gg.gamello.user.exception.PasswordsDontMatchException;
-import gg.gamello.user.exception.UserAlreadyExistsException;
 import gg.gamello.user.exception.UserDoesNotExistsException;
 import gg.gamello.user.exception.UserIsNotActiveException;
-import gg.gamello.user.repository.RoleRepository;
 import gg.gamello.user.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 
-import java.util.Collections;
-import java.util.List;
+import java.util.UUID;
 
 @Slf4j
 @Service
 public class AuthService {
 
     private final UserRepository userRepository;
-    private final RoleRepository roleRepository;
     private final TokenService tokenService;
     private final PasswordEncoder passwordEncoder;
-    private final RestTemplate restTemplate;
 
     public AuthService(UserRepository userRepository,
-                       RoleRepository roleRepository,
                        TokenService tokenService,
-                       PasswordEncoder passwordEncoder,
-                       RestTemplate restTemplate) {
+                       PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
-        this.roleRepository = roleRepository;
         this.tokenService = tokenService;
         this.passwordEncoder = passwordEncoder;
-        this.restTemplate = restTemplate;
     }
 
-    public User createUser(UserRegistrationForm registrationForm) throws UserAlreadyExistsException {
-        if (userRepository.existsUserByEmailOrUsername(registrationForm.getEmail(), registrationForm.getUsername()))
-            throw new UserAlreadyExistsException("User with credentials "  +
-                    registrationForm.getEmail() + "/" + registrationForm.getUsername() + " already exists");
 
-        User user = new User(registrationForm.getUsername(), registrationForm.getEmail());
-        user.setPassword(passwordEncoder.encode(registrationForm.getPassword()));
-        user.setRoles(getDefaultRoles());
-        user.setLanguage(Language.mapLanguage(registrationForm.getLanguage()));
 
-        userRepository.save(user);
-
-        Token token = tokenService.createToken(user.getId(), TokenType.ACTIVATION);
-
-        Email.createMailForUser(user)
-                .useTemplateForToken(token)
-                .addData("username", user.getUsername())
-                .sendWithLoadBalance(restTemplate);
-
-        log.info("Created user with id: " + user.getId());
-        return user;
-    }
-
-    private List<Role> getDefaultRoles() {
-        return Collections.singletonList(roleRepository.findByRole(RoleType.USER));
-    }
-
-    public void activateUser(Long userId) {
+    public void activateUser(UUID userId) {
         User user = userRepository.getUserById(userId);
 
         user.setActive(true);
@@ -97,14 +56,14 @@ public class AuthService {
         return user;
     }
 
-    public void createDeleteRequest(Long userId){
+    public void createDeleteRequest(UUID userId){
         User user = userRepository.getUserById(userId);
 
         tokenService.createToken(user.getId(), TokenType.DELETE);
         log.info("Created delete request for user with id:  " + user.getId());
     }
 
-    public void deleteUser(Long userId){
+    public void deleteUser(UUID userId){
         User user = userRepository.getUserById(userId);
         tokenService.deleteAllTokensForUser(userId);
 
@@ -129,7 +88,7 @@ public class AuthService {
         }
     }
 
-    public void recoverUser(Long userId, String password) {
+    public void recoverUser(UUID userId, String password) {
         User user = userRepository.getUserById(userId);
 
         user.setPassword(passwordEncoder.encode(password));
@@ -139,7 +98,7 @@ public class AuthService {
         log.info("Changed password for user with id:  " + user.getId());
     }
 
-    public void changePassword(Long userId, Passwords passwords) throws PasswordsDontMatchException {
+    public void changePassword(UUID userId, Passwords passwords) throws PasswordsDontMatchException {
         User user = userRepository.getUserById(userId);
 
         if (!passwordEncoder.matches(passwords.getOldPassword(), user.getPassword()))
@@ -152,7 +111,7 @@ public class AuthService {
         log.info("Changed password for user with id:  " + user.getId());
     }
 
-    public void createEmailChangeRequest(Long userId){
+    public void createEmailChangeRequest(UUID userId){
         User user = userRepository.getUserById(userId);
 
         tokenService.createToken(user.getId(), TokenType.EMAIL);
@@ -160,7 +119,7 @@ public class AuthService {
         log.info("Created email change request for user with id:  " + user.getId());
     }
 
-    public void changeEmail(Long userId, String email) throws UserDoesNotExistsException {
+    public void changeEmail(UUID userId, String email) throws UserDoesNotExistsException {
         User user = userRepository.findUserById(userId)
                 .orElseThrow(() -> new UserDoesNotExistsException("User with id " + userId +
                         " does not exists"));

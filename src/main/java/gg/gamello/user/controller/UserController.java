@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.util.UUID;
 
 
 @RestController
@@ -25,7 +26,7 @@ public class UserController {
     }
 
     @GetMapping("/api/{userId}")
-    public User getUser(@PathVariable Long userId) throws UserDoesNotExistsException, UserIsNotActiveException {
+    public User getUser(@PathVariable UUID userId) throws UserDoesNotExistsException, UserIsNotActiveException {
         return userService.getUser(userId);
     }
 

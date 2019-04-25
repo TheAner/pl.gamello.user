@@ -7,6 +7,7 @@ import gg.gamello.user.domain.Passwords;
 import gg.gamello.user.domain.UserRegistrationForm;
 import gg.gamello.user.exception.*;
 import gg.gamello.user.service.AuthService;
+import gg.gamello.user.service.RegistrationService;
 import gg.gamello.user.service.TokenService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.annotation.Resource;
+import java.util.UUID;
 
 @RestController
 public class UserAuthController {
@@ -23,12 +25,15 @@ public class UserAuthController {
     @Autowired
     TokenService tokenService;
 
+    @Autowired
+    RegistrationService registrationService;
+
     @Resource(name = "requestUser")
     User requestUser;
 
     @PostMapping("/")
-    public ResponseEntity<String> registerAccount(@RequestBody UserRegistrationForm registrationForm) throws UserAlreadyExistsException{
-        User user = authService.createUser(registrationForm);
+    public ResponseEntity<String> registerAccount(@RequestBody UserRegistrationForm registrationForm) throws UserAlreadyExistsException {
+        User user = registrationService.createUser(registrationForm);
         return ResponseEntity
                 .created(UriComponentsBuilder
                         .fromUriString("/user/{id}")
@@ -37,7 +42,7 @@ public class UserAuthController {
     }
 
     @PostMapping("/confirm/{userId}")
-    public ResponseEntity<String> confirmAccount(@PathVariable Long userId,
+    public ResponseEntity<String> confirmAccount(@PathVariable UUID userId,
                                                  @RequestParam(value = "token") String token) throws TokenException {
         tokenService.confirmToken(userId, TokenType.ACTIVATION, token);
         authService.activateUser(userId);
@@ -51,7 +56,7 @@ public class UserAuthController {
     }
 
     @DeleteMapping("/confirm/{userId}")
-    public ResponseEntity<String> confirmDeleteAccount(@PathVariable Long userId,
+    public ResponseEntity<String> confirmDeleteAccount(@PathVariable UUID userId,
                                                        @RequestParam(value = "token") String token) throws TokenException {
         tokenService.confirmToken(userId, TokenType.DELETE, token);
         authService.deleteUser(userId);
@@ -65,7 +70,7 @@ public class UserAuthController {
     }
 
     @PostMapping("/confirm/password/{userId}")
-    public ResponseEntity<String> confirmPasswordRecover(@PathVariable Long userId,
+    public ResponseEntity<String> confirmPasswordRecover(@PathVariable UUID userId,
                                                          @RequestParam(value = "token") String token,
                                                          @RequestBody String password) throws TokenException {
         tokenService.confirmToken(userId, TokenType.PASSWORD, token);
@@ -86,7 +91,7 @@ public class UserAuthController {
     }
 
     @PostMapping("/confirm/email/{userId}")
-    public ResponseEntity<String> confirmEmailChange(@PathVariable Long userId,
+    public ResponseEntity<String> confirmEmailChange(@PathVariable UUID userId,
                                                      @RequestParam(value = "email") String email,
                                                      @RequestParam(value = "token") String token) throws TokenException, UserDoesNotExistsException {
         tokenService.confirmToken(userId, TokenType.EMAIL, token);
@@ -96,7 +101,7 @@ public class UserAuthController {
 
     @PostMapping("/validate/{typeOfToken}/{userId}")
     public ResponseEntity<String> validateToken(@PathVariable String typeOfToken,
-                                                @PathVariable Long userId,
+                                                @PathVariable UUID userId,
                                                 @RequestParam(value = "token") String token) throws IllegalArgumentException, TokenException {
         TokenType tokenType = TokenType.valueOf(typeOfToken);
         tokenService.confirmToken(userId, tokenType, token);

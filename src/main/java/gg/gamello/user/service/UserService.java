@@ -8,6 +8,8 @@ import gg.gamello.user.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.UUID;
+
 @Slf4j
 @Service
 public class UserService {
@@ -17,7 +19,7 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
-    public User getUser(Long userId) throws UserDoesNotExistsException, UserIsNotActiveException {
+    public User getUser(UUID userId) throws UserDoesNotExistsException, UserIsNotActiveException {
         User user = userRepository.findUserById(userId)
                 .orElseThrow(()-> new UserDoesNotExistsException("User with id " + userId +
                         " does not exists"));
@@ -30,7 +32,7 @@ public class UserService {
         return user;
     }
 
-    public void changeLanguage(Long id, String language){
+    public void changeLanguage(UUID id, String language){
         User user = userRepository.getUserById(id);
         user.setLanguage(Language.mapLanguage(language));
 

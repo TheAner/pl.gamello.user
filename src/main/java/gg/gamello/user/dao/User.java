@@ -12,6 +12,7 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import java.util.Collection;
 import java.util.Date;
+import java.util.UUID;
 
 @Entity
 @Table(
@@ -22,8 +23,8 @@ import java.util.Date;
 public class User {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @Column(columnDefinition = "BINARY(16)")
+    private UUID id;
 
     @NotEmpty(message = "Username can not be empty")
     @Length(min = 3, max = 24, message = "Username must be between {min} and {max} characters long")
@@ -53,6 +54,7 @@ public class User {
     private Collection<Role> roles;
 
     public User(@NotBlank String username, @NotBlank String email) {
+        this.id = UUID.randomUUID();
         this.username = username;
         this.email = email;
     }

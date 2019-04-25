@@ -7,10 +7,11 @@ import org.springframework.stereotype.Repository;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.util.Optional;
+import java.util.UUID;
 
 @Repository
 public interface TokenRepository extends CrudRepository<Token, Long> {
-    Optional<Token> findByUserIdAndValue(@NotBlank Long userId, @NotBlank String value);
+    Optional<Token> findByUserIdAndValue(@NotBlank UUID userId, @NotBlank String value);
 
-    void deleteAllByUserId(@NotNull Long userId);
+    void deleteAllByUserId(@NotNull UUID userId);
 }
