@@ -10,8 +10,8 @@ server:
     port: 5000
 eureka:
     client:
-        service-url:
-            defaultZone: http://node001.de.ovh.network.gamello.gg:8761/eureka/
+        serviceUrl:
+            defaultZone: http://eureka-gamello-01.eu-central-1.elasticbeanstalk.com:8761/eureka/
     instance:
         lease-expiration-duration-in-seconds: 25
         lease-renewal-interval-in-seconds: 15
