@@ -6,3 +6,5 @@ spring:
 token:
     chars-length: 18
     number-of-sections: 4
+jwt:
+    certificate-path: crypto/jwtaccess.cer
