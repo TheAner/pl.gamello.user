@@ -14,7 +14,7 @@ public class ServiceExceptionAdvice {
 
     @ResponseBody
     @ExceptionHandler({RestClientException.class, IllegalStateException.class})
-    @ResponseStatus(HttpStatus.FAILED_DEPENDENCY)
+    @ResponseStatus(HttpStatus.GATEWAY_TIMEOUT)
     String ServiceExceptionHandler(Exception ex) {
 
         log.error(ex.getMessage() + " - connection failed");
