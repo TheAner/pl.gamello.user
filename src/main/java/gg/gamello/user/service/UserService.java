@@ -6,6 +6,7 @@ import gg.gamello.user.exception.UserDoesNotExistsException;
 import gg.gamello.user.exception.UserIsNotActiveException;
 import gg.gamello.user.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
@@ -32,8 +33,8 @@ public class UserService {
         return user;
     }
 
-    public void changeLanguage(UUID id, String language){
-        User user = userRepository.getUserById(id);
+    public void changeLanguage(Authentication authentication, String language){
+        User user = userRepository.getUserById(User.getFromAuthentication(authentication).getId());
         user.setLanguage(Language.mapLanguage(language));
 
         userRepository.save(user);

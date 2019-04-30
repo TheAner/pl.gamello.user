@@ -6,9 +6,9 @@ import gg.gamello.user.exception.UserIsNotActiveException;
 import gg.gamello.user.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
-import javax.annotation.Resource;
 import java.util.UUID;
 
 
@@ -17,12 +17,9 @@ public class UserController {
     @Autowired
     UserService userService;
 
-    @Resource(name = "requestUser")
-    User requestUser;
-
     @GetMapping("/")
-    public User getUser() throws UserDoesNotExistsException, UserIsNotActiveException {
-        return userService.getUser(requestUser.getId());
+    public User getUser(Authentication authentication) throws UserDoesNotExistsException, UserIsNotActiveException {
+        return userService.getUser(User.getFromAuthentication(authentication).getId());
     }
 
     @GetMapping("/api/{userId}")
@@ -31,8 +28,8 @@ public class UserController {
     }
 
     @PostMapping("/change/language")
-    public ResponseEntity<String> changeLanguage(@RequestBody String language){
-        userService.changeLanguage(requestUser.getId(), language);
+    public ResponseEntity<String> changeLanguage(@RequestBody String language, Authentication authentication){
+        userService.changeLanguage(authentication, language);
         return ResponseEntity.ok("Language changed");
     }
 }

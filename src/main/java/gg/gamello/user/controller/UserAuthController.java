@@ -11,10 +11,11 @@ import gg.gamello.user.service.RegistrationService;
 import gg.gamello.user.service.TokenService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import javax.annotation.Resource;
 import java.util.UUID;
 
 @RestController
@@ -27,9 +28,6 @@ public class UserAuthController {
 
     @Autowired
     RegistrationService registrationService;
-
-    @Resource(name = "requestUser")
-    User requestUser;
 
     @PostMapping("/")
     public ResponseEntity<String> registerAccount(@RequestBody UserRegistrationForm registrationForm) throws UserAlreadyExistsException {
@@ -50,8 +48,8 @@ public class UserAuthController {
     }
 
     @DeleteMapping("/")
-    public ResponseEntity<String> createDeleteRequest() {
-        authService.createDeleteRequest(requestUser.getId());
+    public ResponseEntity<String> createDeleteRequest(Authentication authentication) {
+        authService.createDeleteRequest(authentication);
         return ResponseEntity.ok("User delete request sent");
     }
 
@@ -79,14 +77,14 @@ public class UserAuthController {
     }
 
     @PostMapping("/change/password")
-    public ResponseEntity<String> changePassword(@RequestBody Passwords passwords) throws PasswordsDontMatchException {
-        authService.changePassword(requestUser.getId(), passwords);
+    public ResponseEntity<String> changePassword(@RequestBody Passwords passwords, Authentication authentication) throws PasswordsDontMatchException {
+        authService.changePassword(authentication, passwords);
         return ResponseEntity.ok("Password changed");
     }
 
     @PostMapping("/change/email")
-    public ResponseEntity<String> createEmailChangeRequest(@RequestBody String email){
-        authService.createEmailChangeRequest(requestUser.getId());
+    public ResponseEntity<String> createEmailChangeRequest(@RequestBody String email, Authentication authentication){
+        authService.createEmailChangeRequest(authentication);
         return ResponseEntity.ok("User email change request sent");
     }
 

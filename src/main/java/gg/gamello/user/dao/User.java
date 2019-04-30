@@ -5,6 +5,7 @@ import gg.gamello.user.dao.type.Language;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.Length;
+import org.springframework.security.core.Authentication;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;
@@ -59,4 +60,7 @@ public class User {
         this.email = email;
     }
 
+    public static User getFromAuthentication(Authentication authentication) {
+        return (User) authentication.getPrincipal();
+    }
 }

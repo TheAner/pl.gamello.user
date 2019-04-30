@@ -1,51 +1,74 @@
 package gg.gamello.user.security;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import gg.gamello.user.dao.User;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtException;
+import io.jsonwebtoken.Jwts;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang.StringUtils;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.filter.OncePerRequestFilter;
+import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
+import org.springframework.web.client.HttpClientErrorException;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Base64;
+import java.security.PublicKey;
+import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Slf4j
-public class JwtAuthenticationFilter extends OncePerRequestFilter {
+public class JwtAuthenticationFilter extends BasicAuthenticationFilter {
+
+    private final PublicKey publicKey;
+
+    public JwtAuthenticationFilter(AuthenticationManager authenticationManager, PublicKey publicKey) {
+        super(authenticationManager);
+        this.publicKey = publicKey;
+    }
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        try {
-            String token = resolveToken(request);
-            String[] tokenParsed = token.split("\\.");
-
-            byte[] decodedToken = Base64.getDecoder().decode(tokenParsed[1]);
-
-            ObjectMapper objectMapper = new ObjectMapper();
-
-            JsonNode actualObj = objectMapper.readTree(new String(decodedToken));
-
-            User user = objectMapper.convertValue(actualObj.get("user"), User.class);
-
-            UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(user, null, new ArrayList<>());
-            SecurityContextHolder.getContext().setAuthentication(authentication);
-        } catch (Exception e) {
-            log.debug("Error occurred while setting authentication: " + e.getMessage());
-        }
-
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws IOException, ServletException, HttpClientErrorException {
+        SecurityContextHolder.getContext().setAuthentication(getAuthentication(request));
         filterChain.doFilter(request, response);
     }
 
-    private String resolveToken(HttpServletRequest request) throws Exception {
-        String token = request.getHeader("Authorization");
-        if (token == null || !token.startsWith("Bearer"))
-            throw new Exception("Missing header or bad prefix");
-        return token.substring(7);
+    private UsernamePasswordAuthenticationToken getAuthentication(HttpServletRequest request) {
+        try {
+            String token = resolveToken(request);
+            Claims payload = Jwts.parser().setSigningKey(publicKey).parseClaimsJws(token).getBody();
+
+            User user = new User();
+            user.setId(UUID.fromString(payload.getSubject()));
+            user.setUsername(payload.get("username", String.class));
+            user.setEmail(payload.get("email", String.class));
+
+            @SuppressWarnings("unchecked")
+            List<GrantedAuthority> authorities = getGrantedAuthorities(payload.get("roles", List.class));
+            return new UsernamePasswordAuthenticationToken(user, null, authorities);
+        } catch (JwtException | IllegalArgumentException ex) {
+            log.warn("Authentication exception [{}:{}] - {}", request.getRemoteAddr(), ex.getClass().getSimpleName(), ex.getMessage());
+            return null;
+        }
+    }
+
+    private List<GrantedAuthority> getGrantedAuthorities(List<String> roles) {
+        return roles.stream()
+                .map(SimpleGrantedAuthority::new)
+                .collect(Collectors.toList());
+    }
+
+    private String resolveToken(HttpServletRequest request) throws IllegalArgumentException {
+        String headerValue = request.getHeader("Authorization");
+        if(StringUtils.isEmpty(headerValue) || !headerValue.startsWith("Bearer "))
+            return null;
+        return headerValue.substring("Bearer".length() + 1);
     }
 }

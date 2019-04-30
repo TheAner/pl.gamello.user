@@ -9,8 +9,10 @@ import gg.gamello.user.exception.UserDoesNotExistsException;
 import gg.gamello.user.exception.UserIsNotActiveException;
 import gg.gamello.user.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
 
@@ -56,13 +58,14 @@ public class AuthService {
         return user;
     }
 
-    public void createDeleteRequest(UUID userId){
-        User user = userRepository.getUserById(userId);
+    public void createDeleteRequest(Authentication authentication){
+        User user = userRepository.getUserById(User.getFromAuthentication(authentication).getId());
 
         tokenService.createToken(user.getId(), TokenType.DELETE);
         log.info("Created delete request for user with id:  " + user.getId());
     }
 
+    @Transactional
     public void deleteUser(UUID userId){
         User user = userRepository.getUserById(userId);
         tokenService.deleteAllTokensForUser(userId);
@@ -98,8 +101,8 @@ public class AuthService {
         log.info("Changed password for user with id:  " + user.getId());
     }
 
-    public void changePassword(UUID userId, Passwords passwords) throws PasswordsDontMatchException {
-        User user = userRepository.getUserById(userId);
+    public void changePassword(Authentication authentication, Passwords passwords) throws PasswordsDontMatchException {
+        User user = userRepository.getUserById(User.getFromAuthentication(authentication).getId());
 
         if (!passwordEncoder.matches(passwords.getOldPassword(), user.getPassword()))
             throw new PasswordsDontMatchException("Passwords don't match");
@@ -111,8 +114,8 @@ public class AuthService {
         log.info("Changed password for user with id:  " + user.getId());
     }
 
-    public void createEmailChangeRequest(UUID userId){
-        User user = userRepository.getUserById(userId);
+    public void createEmailChangeRequest(Authentication authentication){
+        User user = userRepository.getUserById(User.getFromAuthentication(authentication).getId());
 
         tokenService.createToken(user.getId(), TokenType.EMAIL);
 

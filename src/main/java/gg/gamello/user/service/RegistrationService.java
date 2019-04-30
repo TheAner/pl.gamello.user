@@ -57,7 +57,7 @@ public class RegistrationService {
 
         Token token = tokenService.createToken(user.getId(), TokenType.ACTIVATION);
 
-        processEmail(user, token);
+        //processEmail(user, token);
 
         log.info("Created user with id: " + user.getId());
 

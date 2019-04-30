@@ -20,10 +20,12 @@ import java.util.UUID;
 public class Token {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @Column(columnDefinition = "BINARY(16)")
+    @GeneratedValue(generator = "uuid2")
+    private UUID id;
 
     @NotNull
+    @Column(columnDefinition = "BINARY(16)")
     private UUID userId;
 
     @Enumerated(EnumType.STRING)
