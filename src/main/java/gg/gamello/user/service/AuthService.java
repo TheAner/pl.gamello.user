@@ -32,8 +32,6 @@ public class AuthService {
         this.passwordEncoder = passwordEncoder;
     }
 
-
-
     public void activateUser(UUID userId) {
         User user = userRepository.getUserById(userId);
 
