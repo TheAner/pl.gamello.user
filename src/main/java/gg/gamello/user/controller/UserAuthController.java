@@ -29,7 +29,7 @@ public class UserAuthController {
     RegistrationService registrationService;
 
     @PostMapping("/")
-    public ResponseEntity<String> registerAccount(@RequestBody UserRegistrationForm registrationForm) throws UserAlreadyExistsException {
+    public ResponseEntity<String> registerUser(@RequestBody UserRegistrationForm registrationForm) throws UserAlreadyExistsException {
         User user = registrationService.createUser(registrationForm);
         return ResponseEntity
                 .created(UriComponentsBuilder
@@ -39,7 +39,7 @@ public class UserAuthController {
     }
 
     @PostMapping("/confirm/{userId}")
-    public ResponseEntity<String> confirmAccount(@PathVariable UUID userId,
+    public ResponseEntity<String> confirmUser(@PathVariable UUID userId,
                                                  @RequestParam(value = "token") String token) throws TokenException {
         tokenService.confirmToken(userId, TokenType.ACTIVATION, token);
         authService.activateUser(userId);
@@ -53,7 +53,7 @@ public class UserAuthController {
     }
 
     @DeleteMapping("/confirm/{userId}")
-    public ResponseEntity<String> confirmDeleteAccount(@PathVariable UUID userId,
+    public ResponseEntity<String> confirmDeleteUser(@PathVariable UUID userId,
                                                        @RequestParam(value = "token") String token) throws TokenException {
         tokenService.confirmToken(userId, TokenType.DELETE, token);
         authService.deleteUser(userId);
