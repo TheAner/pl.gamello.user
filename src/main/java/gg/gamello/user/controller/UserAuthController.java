@@ -99,9 +99,9 @@ public class UserAuthController {
     @PostMapping("/validate/{typeOfToken}/{userId}")
     public ResponseEntity<String> validateToken(@PathVariable String typeOfToken,
                                                 @PathVariable UUID userId,
-                                                @RequestParam(value = "token") String token) throws IllegalArgumentException, TokenException {
-        TokenType tokenType = TokenType.valueOf(typeOfToken);
-        tokenService.confirmToken(userId, tokenType, token);
+                                                @RequestParam(value = "token") String token) throws TokenException {
+        TokenType tokenType = TokenType.valueOf(typeOfToken.toUpperCase());
+        tokenService.validateToken(userId, tokenType, token);
         return ResponseEntity.ok("Correct token");
     }
 

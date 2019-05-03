@@ -45,18 +45,23 @@ public class TokenService {
     }
 
     public void confirmToken(UUID userId, TokenType tokenType, String tokenValue) throws TokenException {
-        Token token = tokenRepository.findByUserIdAndValue(userId, tokenValue)
-                .orElseThrow(()-> new TokenNotFoundException("Token: {" + tokenValue +
-                                                            "} for user with id: " + userId +
-                                                            " does not exists"));
-
-        checkTypeCompatibility(tokenType, token);
-        checkDateValid(token);
+        Token token = validateToken(userId, tokenType, tokenValue);
 
         tokenRepository.delete(token);
 
         log.info("Confirmed " + tokenType.name() +
                 " operation for user with id: " + userId);
+    }
+
+    public Token validateToken(UUID userId, TokenType tokenType, String tokenValue) throws TokenException{
+        Token token = tokenRepository.findByUserIdAndValue(userId, tokenValue)
+                .orElseThrow(()-> new TokenNotFoundException("Token: {" + tokenValue +
+                        "} for user with id: " + userId +
+                        " does not exists"));
+
+        checkTypeCompatibility(tokenType, token);
+        checkDateValid(token);
+        return token;
     }
 
     void deleteAllTokensForUser(UUID userId){
