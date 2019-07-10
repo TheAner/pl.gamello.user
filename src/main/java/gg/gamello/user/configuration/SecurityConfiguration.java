@@ -31,16 +31,16 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
                 .antMatchers(HttpMethod.POST, "/")
                     .permitAll()
-                .antMatchers( "/confirm/**", "/recover", "/validate/**", "/api/**")
+                .antMatchers( "/confirm/**", "/recover", "/validate/**", "/api/**", "/id/**", "/special/**")
                     .permitAll()
                 .antMatchers("/", "/change/**")
                     .authenticated();
 
         http
                 .formLogin()
-                .disable()
+                    .disable()
                 .logout()
-                .disable();
+                    .disable();
 
         http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 
@@ -53,6 +53,6 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     public void configure(WebSecurity web) throws Exception {
         web.ignoring()
                 .antMatchers(HttpMethod.POST, "/")
-                .antMatchers( "/confirm/**", "/recover", "/validate/**", "/api/**");
+                .antMatchers( "/confirm/**", "/recover", "/validate/**", "/api/**", "/id/**", "/special/**");
     }
 }
