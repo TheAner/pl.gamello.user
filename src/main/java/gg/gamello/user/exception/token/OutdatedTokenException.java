@@ -1,4 +1,4 @@
-package gg.gamello.user.exception;
+package gg.gamello.user.exception.token;
 
 public class OutdatedTokenException extends TokenException {
     public OutdatedTokenException(String message) {

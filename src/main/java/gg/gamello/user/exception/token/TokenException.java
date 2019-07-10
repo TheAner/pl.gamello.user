@@ -1,4 +1,4 @@
-package gg.gamello.user.exception;
+package gg.gamello.user.exception.token;
 
 public class TokenException extends Exception {
     TokenException(String message) {
