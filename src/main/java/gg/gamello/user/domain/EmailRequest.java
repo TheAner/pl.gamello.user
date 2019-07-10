@@ -12,7 +12,7 @@ import java.util.UUID;
 
 @Setter(AccessLevel.PRIVATE)
 @Data
-public class Email {
+public class EmailRequest {
 
     private UUID userId;
     private String email;
@@ -20,21 +20,21 @@ public class Email {
     private String language;
     private Map<String, String> dataset;
 
-    public static Email createMailForUser(User user){
-        Email email = new Email();
-        email.setUserId(user.getId());
-        email.setEmail(user.getEmail());
-        email.setLanguage(user.getLanguage().toString());
-        email.dataset = new HashMap<>();
-        return email;
+    public static EmailRequest createMailForUser(User user){
+        EmailRequest emailRequest = new EmailRequest();
+        emailRequest.setUserId(user.getId());
+        emailRequest.setEmail(user.getEmail());
+        emailRequest.setLanguage(user.getLanguage().toString());
+        emailRequest.dataset = new HashMap<>();
+        return emailRequest;
     }
 
-    public Email addData(String key, String value){
+    public EmailRequest addData(String key, String value){
         this.dataset.put(key, value);
         return this;
     }
 
-    public Email useTemplateForToken(Token token){
+    public EmailRequest useTemplateForToken(Token token){
         this.setTemplate("user." + token.getTypeOfToken().toString().toLowerCase());
         this.addData("token", token.getValue());
         return this;

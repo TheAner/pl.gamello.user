@@ -65,11 +65,11 @@ public class RegistrationService {
     }
 
     private void processEmail(User user, Token token) {
-        Email email = Email.createMailForUser(user)
+        EmailRequest emailRequest = EmailRequest.createMailForUser(user)
                 .useTemplateForToken(token)
                 .addData("username", user.getUsername());
 
-        emailProvider.sendEmail(email);
+        emailProvider.sendEmail(emailRequest);
     }
 
     private List<Role> getDefaultRoles() {
