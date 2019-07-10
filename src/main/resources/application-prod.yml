@@ -15,3 +15,5 @@ eureka:
     instance:
         lease-expiration-duration-in-seconds: 25
         lease-renewal-interval-in-seconds: 15
+avatar:
+    location: upload/images/avatars/

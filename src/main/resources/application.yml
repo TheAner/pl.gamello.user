@@ -3,8 +3,20 @@ spring:
         name: user
     profiles:
         active: prod
+    servlet:
+        multipart:
+            max-request-size: 1MB
 token:
     chars-length: 18
     number-of-sections: 4
+cloud:
+    aws:
+        credentials:
+            access-key: AKIASV6WQWM7UFM4MVC6
+            secret-key: 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
+            region: eu-central-1
+        bucket-name: gamello-upload
+avatar:
+    default: app/images/default_avatar/default_avatar
 jwt:
     certificate-path: crypto/jwtaccess.cer
