@@ -1,4 +1,4 @@
-package gg.gamello.user.domain;
+package gg.gamello.user.domain.avatar;
 
 public enum AvatarSize {
     mini(24),

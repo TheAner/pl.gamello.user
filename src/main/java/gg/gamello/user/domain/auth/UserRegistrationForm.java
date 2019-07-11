@@ -1,4 +1,4 @@
-package gg.gamello.user.domain;
+package gg.gamello.user.domain.auth;
 
 import lombok.Data;
 import org.hibernate.validator.constraints.Length;
@@ -12,8 +12,8 @@ public class UserRegistrationForm {
     @Length(min = 3, max = 24, message = "Username must be between {min} and {max} characters long")
     String username;
 
-    @NotEmpty(message = "Email can not be empty")
-    @Email(message = "Email should be correctly")
+    @NotEmpty(message = "EmailRequest can not be empty")
+    @Email(message = "EmailRequest should be correctly")
     String email;
 
     @NotEmpty(message = "Password can not be empty")

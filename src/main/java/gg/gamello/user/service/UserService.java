@@ -2,8 +2,10 @@ package gg.gamello.user.service;
 
 import gg.gamello.user.dao.User;
 import gg.gamello.user.dao.type.Language;
-import gg.gamello.user.exception.UserDoesNotExistsException;
-import gg.gamello.user.exception.UserIsNotActiveException;
+import gg.gamello.user.domain.UserDetails;
+import gg.gamello.user.domain.avatar.Avatar;
+import gg.gamello.user.exception.user.UserDoesNotExistsException;
+import gg.gamello.user.exception.user.UserIsNotActiveException;
 import gg.gamello.user.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;

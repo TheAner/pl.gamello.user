@@ -1,9 +1,9 @@
 package gg.gamello.user.controller.advisor;
 
 import gg.gamello.user.exception.PasswordsDontMatchException;
-import gg.gamello.user.exception.UserAlreadyExistsException;
-import gg.gamello.user.exception.UserDoesNotExistsException;
-import gg.gamello.user.exception.UserIsNotActiveException;
+import gg.gamello.user.exception.user.UserAlreadyExistsException;
+import gg.gamello.user.exception.user.UserDoesNotExistsException;
+import gg.gamello.user.exception.user.UserIsNotActiveException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ControllerAdvice;

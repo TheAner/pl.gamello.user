@@ -1,8 +1,9 @@
 package gg.gamello.user.controller;
 
 import gg.gamello.user.dao.User;
-import gg.gamello.user.exception.UserDoesNotExistsException;
-import gg.gamello.user.exception.UserIsNotActiveException;
+import gg.gamello.user.domain.UserDetails;
+import gg.gamello.user.exception.user.UserDoesNotExistsException;
+import gg.gamello.user.exception.user.UserIsNotActiveException;
 import gg.gamello.user.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

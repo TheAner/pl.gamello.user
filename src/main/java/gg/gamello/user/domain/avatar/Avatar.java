@@ -1,4 +1,4 @@
-package gg.gamello.user.domain;
+package gg.gamello.user.domain.avatar;
 
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import lombok.Data;

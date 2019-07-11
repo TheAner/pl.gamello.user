@@ -1,4 +1,4 @@
-package gg.gamello.user.domain;
+package gg.gamello.user.domain.auth;
 
 import lombok.Data;
 import org.hibernate.validator.constraints.Length;

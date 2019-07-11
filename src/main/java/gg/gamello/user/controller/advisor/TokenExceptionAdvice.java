@@ -1,7 +1,7 @@
 package gg.gamello.user.controller.advisor;
 
-import gg.gamello.user.exception.InvalidTypeOfTokenException;
-import gg.gamello.user.exception.TokenNotFoundException;
+import gg.gamello.user.exception.token.InvalidTypeOfTokenException;
+import gg.gamello.user.exception.token.TokenNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ControllerAdvice;

@@ -3,10 +3,10 @@ package gg.gamello.user.service;
 
 import gg.gamello.user.dao.Token;
 import gg.gamello.user.dao.type.TokenType;
-import gg.gamello.user.exception.InvalidTypeOfTokenException;
-import gg.gamello.user.exception.OutdatedTokenException;
-import gg.gamello.user.exception.TokenException;
-import gg.gamello.user.exception.TokenNotFoundException;
+import gg.gamello.user.exception.token.InvalidTypeOfTokenException;
+import gg.gamello.user.exception.token.OutdatedTokenException;
+import gg.gamello.user.exception.token.TokenException;
+import gg.gamello.user.exception.token.TokenNotFoundException;
 import gg.gamello.user.repository.TokenRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.RandomStringUtils;
