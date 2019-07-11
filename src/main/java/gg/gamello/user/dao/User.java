@@ -18,7 +18,7 @@ import java.util.UUID;
 @Entity
 @Table(
         name = "User",
-        uniqueConstraints = {@UniqueConstraint(columnNames = {"username","email"})}
+        uniqueConstraints = {@UniqueConstraint(columnNames = {"username", "email", "slug"})}
 )
 @Data @NoArgsConstructor
 public class User {
@@ -27,22 +27,30 @@ public class User {
     @Column(columnDefinition = "BINARY(16)")
     private UUID id;
 
-    @NotEmpty(message = "Username can not be empty")
-    @Length(min = 3, max = 24, message = "Username must be between {min} and {max} characters long")
+    @NotEmpty(message = "Login can not be empty")
+    @Length(min = 3, max = 24, message = "Login must be between {min} and {max} characters long")
     String username;
 
-    @NotEmpty(message = "Email can not be empty")
-    @Email(message = "Email should be correctly")
-    String email;
+    @NotEmpty(message = "Visible name can not be empty")
+    @Length(min = 3, max = 24, message = "Visible name must be between {min} and {max} characters long")
+    private String visibleName;
+
+    private String slug;
+
+    @NotEmpty(message = "EmailRequest can not be empty")
+    @Email(message = "EmailRequest should be correctly")
+    private String email;
 
     @JsonIgnore
     @NotEmpty(message = "Password can not be empty")
     @Length(min = 8, max = 64, message = "Password must be between {min} and {max} characters long")
-    String password;
+    private String password;
 
     private boolean active = false;
 
     private Date registerDate = new Date();
+
+    private String avatarLocation;
 
     @Enumerated(EnumType.STRING)
     private Language language;
@@ -57,6 +65,7 @@ public class User {
     public User(@NotBlank String username, @NotBlank String email) {
         this.id = UUID.randomUUID();
         this.username = username;
+        this.visibleName = username;
         this.email = email;
     }
 
