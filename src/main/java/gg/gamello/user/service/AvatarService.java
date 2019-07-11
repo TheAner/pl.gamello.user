@@ -93,10 +93,10 @@ public class AvatarService {
         return avatars;
     }
 
-    void deleteCurrentAvatars(Profile profile) {
-        if(!profile.getAvatarLocation().equals(defaultAvatar)){
+    void deleteCurrentAvatars(User user) {
+        if(!user.getAvatarLocation().equals(defaultAvatar)){
             AmazonS3 amazonS3 = transferManager.getAmazonS3Client();
-            amazonS3.listObjects(bucketName, profile.getAvatarLocation())
+            amazonS3.listObjects(bucketName, user.getAvatarLocation())
                     .getObjectSummaries()
                     .forEach(file ->
                         amazonS3.deleteObject(bucketName, file.getKey()));

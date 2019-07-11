@@ -27,17 +27,19 @@ public class RegistrationService {
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final TokenService tokenService;
+    private final AvatarService avatarService;
     private final EmailProvider emailProvider;
     private final PasswordEncoder passwordEncoder;
 
     public RegistrationService(UserRepository userRepository,
                                RoleRepository roleRepository,
                                TokenService tokenService,
-                               EmailProvider emailProvider,
+                               AvatarService avatarService, EmailProvider emailProvider,
                                PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
         this.tokenService = tokenService;
+        this.avatarService = avatarService;
         this.emailProvider = emailProvider;
         this.passwordEncoder = passwordEncoder;
     }
@@ -52,6 +54,7 @@ public class RegistrationService {
         user.setPassword(passwordEncoder.encode(registrationForm.getPassword()));
         user.setRoles(getDefaultRoles());
         user.setLanguage(Language.mapLanguage(registrationForm.getLanguage()));
+        user.setAvatarLocation(avatarService.getDefaultAvatar());
 
         userRepository.save(user);
 

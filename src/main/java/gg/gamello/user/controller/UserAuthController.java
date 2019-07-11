@@ -2,10 +2,14 @@ package gg.gamello.user.controller;
 
 import gg.gamello.user.dao.User;
 import gg.gamello.user.dao.type.TokenType;
-import gg.gamello.user.domain.Credentials;
-import gg.gamello.user.domain.Passwords;
-import gg.gamello.user.domain.UserRegistrationForm;
-import gg.gamello.user.exception.*;
+import gg.gamello.user.domain.auth.Credentials;
+import gg.gamello.user.domain.auth.Passwords;
+import gg.gamello.user.domain.auth.UserRegistrationForm;
+import gg.gamello.user.exception.PasswordsDontMatchException;
+import gg.gamello.user.exception.token.TokenException;
+import gg.gamello.user.exception.user.UserAlreadyExistsException;
+import gg.gamello.user.exception.user.UserDoesNotExistsException;
+import gg.gamello.user.exception.user.UserIsNotActiveException;
 import gg.gamello.user.service.AuthService;
 import gg.gamello.user.service.RegistrationService;
 import gg.gamello.user.service.TokenService;
@@ -84,6 +88,9 @@ public class UserAuthController {
     @PostMapping("/change/email")
     public ResponseEntity<String> createEmailChangeRequest(@RequestBody String email, Authentication authentication){
         authService.createEmailChangeRequest(authentication);
+
+        //todo: send email
+
         return ResponseEntity.ok("User email change request sent");
     }
 
@@ -93,7 +100,7 @@ public class UserAuthController {
                                                      @RequestParam(value = "token") String token) throws TokenException, UserDoesNotExistsException {
         tokenService.confirmToken(userId, TokenType.EMAIL, token);
         authService.changeEmail(userId, email);
-        return ResponseEntity.ok("Email changed");
+        return ResponseEntity.ok("EmailRequest changed");
     }
 
     @PostMapping("/validate/{typeOfToken}/{userId}")
