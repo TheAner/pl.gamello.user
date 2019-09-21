@@ -1,5 +1,6 @@
 package gg.gamello.user.controller.advisor;
 
+import gg.gamello.user.exception.ErrorMessage;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -15,10 +16,11 @@ public class ServiceExceptionAdvice {
     @ResponseBody
     @ExceptionHandler({RestClientException.class, IllegalStateException.class})
     @ResponseStatus(HttpStatus.GATEWAY_TIMEOUT)
-    String ServiceExceptionHandler(Exception ex) {
-
+    ErrorMessage ServiceExceptionHandler(Exception ex) {
         log.error(ex.getMessage() + " - connection failed");
 
-        return "Service is currently unavailable";
+        return ErrorMessage.builder()
+                .error("Service is currently unavailable")
+                .build();
     }
 }

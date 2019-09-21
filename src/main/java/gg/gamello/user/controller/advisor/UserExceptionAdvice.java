@@ -1,5 +1,6 @@
 package gg.gamello.user.controller.advisor;
 
+import gg.gamello.user.exception.ErrorMessage;
 import gg.gamello.user.exception.PasswordsDontMatchException;
 import gg.gamello.user.exception.user.UserAlreadyExistsException;
 import gg.gamello.user.exception.user.UserDoesNotExistsException;
@@ -18,32 +19,40 @@ public class UserExceptionAdvice {
     @ResponseBody
     @ExceptionHandler(UserDoesNotExistsException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    String accountNotFoundHandler(UserDoesNotExistsException ex) {
+    ErrorMessage accountNotFoundHandler(UserDoesNotExistsException ex) {
         log.error(ex.getMessage());
-        return ex.getMessage();
+        return ErrorMessage.builder()
+                .error(ex.getMessage())
+                .build();
     }
 
     @ResponseBody
     @ExceptionHandler(UserAlreadyExistsException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    String accountAlreadyExistsHandler(UserAlreadyExistsException ex) {
+    ErrorMessage accountAlreadyExistsHandler(UserAlreadyExistsException ex) {
         log.error(ex.getMessage());
-        return ex.getMessage();
+        return ErrorMessage.builder()
+                .error(ex.getMessage())
+                .build();
     }
 
     @ResponseBody
     @ExceptionHandler(UserIsNotActiveException.class)
     @ResponseStatus(HttpStatus.LOCKED)
-    String accountIsNotActiveHandler(UserIsNotActiveException ex) {
+    ErrorMessage accountIsNotActiveHandler(UserIsNotActiveException ex) {
         log.error(ex.getMessage());
-        return ex.getMessage();
+        return ErrorMessage.builder()
+                .error(ex.getMessage())
+                .build();
     }
 
     @ResponseBody
     @ExceptionHandler(PasswordsDontMatchException.class)
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
-    String passwordsDontMatchHandler(PasswordsDontMatchException ex) {
+    ErrorMessage passwordsDontMatchHandler(PasswordsDontMatchException ex) {
         log.error(ex.getMessage());
-        return ex.getMessage();
+        return ErrorMessage.builder()
+                .error(ex.getMessage())
+                .build();
     }
 }

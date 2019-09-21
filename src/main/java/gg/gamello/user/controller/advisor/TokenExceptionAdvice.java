@@ -1,5 +1,6 @@
 package gg.gamello.user.controller.advisor;
 
+import gg.gamello.user.exception.ErrorMessage;
 import gg.gamello.user.exception.token.InvalidTypeOfTokenException;
 import gg.gamello.user.exception.token.TokenNotFoundException;
 import lombok.extern.slf4j.Slf4j;
@@ -16,16 +17,20 @@ public class TokenExceptionAdvice {
     @ResponseBody
     @ExceptionHandler(TokenNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    String tokenNotFoundHandler(TokenNotFoundException ex) {
+    ErrorMessage tokenNotFoundHandler(TokenNotFoundException ex) {
         log.error(ex.getMessage());
-        return ex.getMessage();
+        return ErrorMessage.builder()
+                .error(ex.getMessage())
+                .build();
     }
 
     @ResponseBody
     @ExceptionHandler(value = {InvalidTypeOfTokenException.class, IllegalArgumentException.class})
     @ResponseStatus(HttpStatus.FORBIDDEN)
-    String invalidTypeOfTokenHandler(Exception ex) {
+    ErrorMessage invalidTypeOfTokenHandler(Exception ex) {
         log.error(ex.getMessage());
-        return ex.getMessage();
+        return ErrorMessage.builder()
+                .error(ex.getMessage())
+                .build();
     }
 }
