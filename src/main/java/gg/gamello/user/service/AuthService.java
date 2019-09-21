@@ -1,12 +1,15 @@
 package gg.gamello.user.service;
 
+import gg.gamello.user.dao.Token;
 import gg.gamello.user.dao.User;
 import gg.gamello.user.dao.type.TokenType;
+import gg.gamello.user.domain.EmailRequest;
 import gg.gamello.user.domain.auth.Credentials;
 import gg.gamello.user.domain.auth.Passwords;
 import gg.gamello.user.exception.PasswordsDontMatchException;
 import gg.gamello.user.exception.user.UserDoesNotExistsException;
 import gg.gamello.user.exception.user.UserIsNotActiveException;
+import gg.gamello.user.provider.EmailProvider;
 import gg.gamello.user.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
@@ -23,13 +26,16 @@ public class AuthService {
     private final UserRepository userRepository;
     private final TokenService tokenService;
     private final PasswordEncoder passwordEncoder;
+    private final EmailProvider emailProvider;
 
     public AuthService(UserRepository userRepository,
                        TokenService tokenService,
-                       PasswordEncoder passwordEncoder) {
+                       PasswordEncoder passwordEncoder,
+                       EmailProvider emailProvider) {
         this.userRepository = userRepository;
         this.tokenService = tokenService;
         this.passwordEncoder = passwordEncoder;
+        this.emailProvider = emailProvider;
     }
 
     public void activateUser(UUID userId) {
@@ -56,10 +62,14 @@ public class AuthService {
         return user;
     }
 
+    @Transactional
     public void createDeleteRequest(Authentication authentication){
         User user = userRepository.getUserById(User.getFromAuthentication(authentication).getId());
 
-        tokenService.createToken(user.getId(), TokenType.DELETE);
+        Token token = tokenService.createToken(user.getId(), TokenType.DELETE);
+
+        processEmail(user, token);
+
         log.info("Created delete request for user with id:  " + user.getId());
     }
 
@@ -72,6 +82,7 @@ public class AuthService {
         log.info("Deleted user with id:  " + user.getId());
     }
 
+    @Transactional
     public void createRecoverRequest(String email){
         try {
             User user = userRepository.findUserByEmail(email)
@@ -81,7 +92,10 @@ public class AuthService {
                 throw new UserIsNotActiveException("User with email " + email +
                         " is not active");
 
-            tokenService.createToken(user.getId(), TokenType.PASSWORD);
+            Token token = tokenService.createToken(user.getId(), TokenType.PASSWORD);
+
+            processEmail(user, token);
+
             log.info("Created recover request for user with id:  " + user.getId());
 
         } catch (UserDoesNotExistsException | UserIsNotActiveException e) {
@@ -112,10 +126,13 @@ public class AuthService {
         log.info("Changed password for user with id:  " + user.getId());
     }
 
+    @Transactional
     public void createEmailChangeRequest(Authentication authentication){
         User user = userRepository.getUserById(User.getFromAuthentication(authentication).getId());
 
-        tokenService.createToken(user.getId(), TokenType.EMAIL);
+        Token token = tokenService.createToken(user.getId(), TokenType.EMAIL);
+
+        processEmail(user, token);
 
         log.info("Created email change request for user with id:  " + user.getId());
     }
@@ -130,5 +147,13 @@ public class AuthService {
         userRepository.save(user);
 
         log.info("Changed email " + user.getEmail() + " for user with id:  " + user.getId());
+    }
+
+    private void processEmail(User user, Token token) {
+        EmailRequest emailRequest = EmailRequest.createMailForUser(user)
+                .useTemplateForToken(token)
+                .addData("username", user.getUsername());
+
+        emailProvider.sendEmail(emailRequest);
     }
 }
