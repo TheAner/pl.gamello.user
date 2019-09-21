@@ -29,6 +29,15 @@ public class EmailRequest {
         return emailRequest;
     }
 
+    public static EmailRequest createMailForUser(User user, String email){
+        EmailRequest emailRequest = new EmailRequest();
+        emailRequest.setUserId(user.getId());
+        emailRequest.setEmail(email);
+        emailRequest.setLanguage(user.getLanguage().toString());
+        emailRequest.dataset = new HashMap<>();
+        return emailRequest;
+    }
+
     public EmailRequest addData(String key, String value){
         this.dataset.put(key, value);
         return this;
@@ -37,6 +46,11 @@ public class EmailRequest {
     public EmailRequest useTemplateForToken(Token token){
         this.setTemplate("user." + token.getTypeOfToken().toString().toLowerCase());
         this.addData("token", token.getValue());
+        return this;
+    }
+
+    public EmailRequest useTemplate(String template){
+        this.setTemplate(template);
         return this;
     }
 }

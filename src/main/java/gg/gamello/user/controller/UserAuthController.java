@@ -87,9 +87,7 @@ public class UserAuthController {
 
     @PostMapping("/change/email")
     public ResponseEntity<String> createEmailChangeRequest(@RequestBody String email, Authentication authentication){
-        authService.createEmailChangeRequest(authentication);
-
-        //todo: send email
+        authService.createEmailChangeRequest(email, authentication);
 
         return ResponseEntity.ok("User email change request sent");
     }

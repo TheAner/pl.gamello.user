@@ -119,6 +119,12 @@ public class AuthService {
         if (!passwordEncoder.matches(passwords.getOldPassword(), user.getPassword()))
             throw new PasswordsDontMatchException("Passwords don't match");
 
+        EmailRequest emailRequest = EmailRequest.createMailForUser(user)
+                .useTemplate("user.password.changed")
+                .addData("username", user.getUsername());
+
+        emailProvider.sendEmail(emailRequest);
+
         user.setPassword(passwordEncoder.encode(passwords.getNewPassword()));
 
         userRepository.save(user);
@@ -127,12 +133,16 @@ public class AuthService {
     }
 
     @Transactional
-    public void createEmailChangeRequest(Authentication authentication){
+    public void createEmailChangeRequest(String email, Authentication authentication){
         User user = userRepository.getUserById(User.getFromAuthentication(authentication).getId());
 
         Token token = tokenService.createToken(user.getId(), TokenType.EMAIL);
 
-        processEmail(user, token);
+        EmailRequest emailRequest = EmailRequest.createMailForUser(user, email)
+                .useTemplateForToken(token)
+                .addData("username", user.getUsername());
+
+        emailProvider.sendEmail(emailRequest);
 
         log.info("Created email change request for user with id:  " + user.getId());
     }
@@ -141,6 +151,12 @@ public class AuthService {
         User user = userRepository.findUserById(userId)
                 .orElseThrow(() -> new UserDoesNotExistsException("User with id " + userId +
                         " does not exists"));
+
+        EmailRequest emailRequest = EmailRequest.createMailForUser(user)
+                .useTemplate("user.email.changed")
+                .addData("username", user.getUsername());
+
+        emailProvider.sendEmail(emailRequest);
 
         user.setEmail(email);
 
