@@ -119,11 +119,7 @@ public class AuthService {
         if (!passwordEncoder.matches(passwords.getOldPassword(), user.getPassword()))
             throw new PasswordsDontMatchException("Passwords don't match");
 
-        EmailRequest emailRequest = EmailRequest.createMailForUser(user)
-                .useTemplate("user.password.changed")
-                .addData("username", user.getUsername());
-
-        emailProvider.sendEmail(emailRequest);
+        processEmail(user, "user.password.changed");
 
         user.setPassword(passwordEncoder.encode(passwords.getNewPassword()));
 
@@ -138,11 +134,7 @@ public class AuthService {
 
         Token token = tokenService.createToken(user.getId(), TokenType.EMAIL);
 
-        EmailRequest emailRequest = EmailRequest.createMailForUser(user, email)
-                .useTemplateForToken(token)
-                .addData("username", user.getUsername());
-
-        emailProvider.sendEmail(emailRequest);
+        processEmail(user, email, token);
 
         log.info("Created email change request for user with id:  " + user.getId());
     }
@@ -152,11 +144,7 @@ public class AuthService {
                 .orElseThrow(() -> new UserDoesNotExistsException("User with id " + userId +
                         " does not exists"));
 
-        EmailRequest emailRequest = EmailRequest.createMailForUser(user)
-                .useTemplate("user.email.changed")
-                .addData("username", user.getUsername());
-
-        emailProvider.sendEmail(emailRequest);
+        processEmail(user, "user.email.changed");
 
         user.setEmail(email);
 
@@ -167,8 +155,21 @@ public class AuthService {
 
     private void processEmail(User user, Token token) {
         EmailRequest emailRequest = EmailRequest.createMailForUser(user)
-                .useTemplateForToken(token)
-                .addData("username", user.getUsername());
+                .useTemplateForToken(token);
+
+        emailProvider.sendEmail(emailRequest);
+    }
+
+    private void processEmail(User user, String email, Token token) {
+        EmailRequest emailRequest = EmailRequest.createMailForUser(user, email)
+                .useTemplateForToken(token);
+
+        emailProvider.sendEmail(emailRequest);
+    }
+
+    private void processEmail(User user, String template) {
+        EmailRequest emailRequest = EmailRequest.createMailForUser(user)
+                .useTemplate(template);
 
         emailProvider.sendEmail(emailRequest);
     }
