@@ -123,7 +123,10 @@ public class AuthService {
         if (!passwordEncoder.matches(passwords.getOldPassword(), user.getPassword()))
             throw new PasswordsDontMatchException("Passwords don't match");
 
-        processEmail(user, "user.password.changed", httpRequest.getRemoteUser());
+        EmailRequest emailRequest = EmailRequest.createMailForUser(user)
+                .addIssuer(httpRequest.getRemoteUser())
+                .useTemplate("user.password.changed");
+        emailProvider.sendEmail(emailRequest);
 
         user.setPassword(passwordEncoder.encode(passwords.getNewPassword()));
 
@@ -148,7 +151,11 @@ public class AuthService {
                 .orElseThrow(() -> new UserDoesNotExistsException("User with id " + userId +
                         " does not exists"));
 
-        processEmail(user, "user.email.changed", httpRequest.getRemoteUser());
+        EmailRequest emailRequest = EmailRequest.createMailForUser(user)
+                .addIssuer(httpRequest.getRemoteUser())
+                .useTemplate("user.email.changed")
+                .addData("newEmail", email);
+        emailProvider.sendEmail(emailRequest);
 
         user.setEmail(email);
 
@@ -167,14 +174,6 @@ public class AuthService {
     private void processEmail(User user, String email, Token token) {
         EmailRequest emailRequest = EmailRequest.createMailForUser(user, email)
                 .useTemplateForToken(token);
-
-        emailProvider.sendEmail(emailRequest);
-    }
-
-    private void processEmail(User user, String template, String issuer) {
-        EmailRequest emailRequest = EmailRequest.createMailForUser(user)
-                .addIssuer(issuer)
-                .useTemplate(template);
 
         emailProvider.sendEmail(emailRequest);
     }
