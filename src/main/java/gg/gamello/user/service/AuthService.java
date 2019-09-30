@@ -17,6 +17,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.UUID;
 
 @Slf4j
@@ -27,15 +28,18 @@ public class AuthService {
     private final TokenService tokenService;
     private final PasswordEncoder passwordEncoder;
     private final EmailProvider emailProvider;
+    private final HttpServletRequest httpRequest;
 
     public AuthService(UserRepository userRepository,
                        TokenService tokenService,
                        PasswordEncoder passwordEncoder,
-                       EmailProvider emailProvider) {
+                       EmailProvider emailProvider,
+                       HttpServletRequest httpRequest) {
         this.userRepository = userRepository;
         this.tokenService = tokenService;
         this.passwordEncoder = passwordEncoder;
         this.emailProvider = emailProvider;
+        this.httpRequest = httpRequest;
     }
 
     public void activateUser(UUID userId) {
@@ -119,7 +123,7 @@ public class AuthService {
         if (!passwordEncoder.matches(passwords.getOldPassword(), user.getPassword()))
             throw new PasswordsDontMatchException("Passwords don't match");
 
-        processEmail(user, "user.password.changed");
+        processEmail(user, "user.password.changed", httpRequest.getRemoteUser());
 
         user.setPassword(passwordEncoder.encode(passwords.getNewPassword()));
 
@@ -144,7 +148,7 @@ public class AuthService {
                 .orElseThrow(() -> new UserDoesNotExistsException("User with id " + userId +
                         " does not exists"));
 
-        processEmail(user, "user.email.changed");
+        processEmail(user, "user.email.changed", httpRequest.getRemoteUser());
 
         user.setEmail(email);
 
@@ -167,8 +171,9 @@ public class AuthService {
         emailProvider.sendEmail(emailRequest);
     }
 
-    private void processEmail(User user, String template) {
+    private void processEmail(User user, String template, String issuer) {
         EmailRequest emailRequest = EmailRequest.createMailForUser(user)
+                .addIssuer(issuer)
                 .useTemplate(template);
 
         emailProvider.sendEmail(emailRequest);

@@ -19,6 +19,7 @@ public class EmailRequest {
     private String email;
     private String template;
     private String language;
+    private String issuer;
     private Map<String, String> data;
 
     public static EmailRequest createMailForUser(User user){
@@ -42,6 +43,11 @@ public class EmailRequest {
 
     public EmailRequest addData(String key, String value){
         this.data.put(key, value);
+        return this;
+    }
+
+    public EmailRequest addIssuer(String issuer){
+        this.setIssuer(issuer);
         return this;
     }
 
