@@ -1,2 +1,7 @@
 # Gamello Local User Microservice Configuration
 # intended use: running on local machine
+aws:
+    access: AKIARYQQ3CL4AK5IW57G
+    secret: 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
+    regions:
+        s3: eu-central-1
