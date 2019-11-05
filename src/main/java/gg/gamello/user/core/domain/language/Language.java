@@ -1,4 +1,4 @@
-package gg.gamello.user.dao.type;
+package gg.gamello.user.core.domain.language;
 
 public enum Language {
     pl,
