@@ -65,7 +65,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 	public void configure(WebSecurity web) {
 		web.ignoring()
 				.antMatchers(HttpMethod.POST, "/")
-				.antMatchers( "/confirm/**", "/recover", "/validate/**", "/api/**", "/id/**", "/special/**");
+				.antMatchers( "/activate/**", "/recover", "/validate/**", "/api/**", "/id/**", "/special/**")
+				.antMatchers("/error");
 	}
 
 	@Override
@@ -73,7 +74,6 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 		auth.authenticationProvider(jwtAuthenticationProvider());
 	}
 
-	@Bean
 	public JwtAuthenticationProvider jwtAuthenticationProvider() throws IOException, CertificateException {
 		var provider = new JwtAuthenticationProvider();
 		var publicKey = PublicKeyFactory.generate(authProperties.getCertificate());
