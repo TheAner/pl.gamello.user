@@ -1,6 +1,5 @@
 package gg.gamello.user.core.domain;
 
-import gg.gamello.user.core.domain.email.Email;
 import gg.gamello.user.core.domain.language.Language;
 import gg.gamello.user.core.domain.role.Role;
 import lombok.AccessLevel;
@@ -10,7 +9,9 @@ import lombok.Setter;
 import org.springframework.data.domain.AbstractAggregateRoot;
 
 import javax.persistence.*;
-import java.util.*;
+import java.util.Collection;
+import java.util.Date;
+import java.util.UUID;
 
 /**
  * Domain Aggregate Root
@@ -33,12 +34,7 @@ public class User extends AbstractAggregateRoot<User> {
 
 	private String slug;
 
-	@OneToMany(fetch = FetchType.EAGER,
-			cascade = CascadeType.ALL)
-	@JoinTable(name = "user_email",
-			joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
-			inverseJoinColumns = @JoinColumn(name = "email_id", referencedColumnName = "id"))
-	private Set<Email> emails;
+	private String email;
 
 	private String password;
 
