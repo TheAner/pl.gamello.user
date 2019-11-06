@@ -1,10 +1,10 @@
-package gg.gamello.user.core.infrastructure.config;
+package gg.gamello.user.infrastructure.config;
 
 import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.AWSCredentialsProvider;
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicAWSCredentials;
-import gg.gamello.user.core.infrastructure.properties.AwsProperties;
+import gg.gamello.user.infrastructure.properties.AwsProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 

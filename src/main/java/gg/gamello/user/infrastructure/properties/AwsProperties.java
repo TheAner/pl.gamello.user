@@ -1,4 +1,4 @@
-package gg.gamello.user.core.infrastructure.properties;
+package gg.gamello.user.infrastructure.properties;
 
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;

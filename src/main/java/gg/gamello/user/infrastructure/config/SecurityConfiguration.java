@@ -1,4 +1,4 @@
-package gg.gamello.user.core.infrastructure.config;
+package gg.gamello.user.infrastructure.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import gg.gamello.dev.authentication.factory.PublicKeyFactory;

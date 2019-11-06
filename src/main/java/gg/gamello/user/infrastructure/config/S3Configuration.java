@@ -1,11 +1,11 @@
-package gg.gamello.user.core.infrastructure.config;
+package gg.gamello.user.infrastructure.config;
 
 import com.amazonaws.auth.AWSCredentialsProvider;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.transfer.TransferManager;
 import com.amazonaws.services.s3.transfer.TransferManagerBuilder;
-import gg.gamello.user.core.infrastructure.properties.AwsProperties;
+import gg.gamello.user.infrastructure.properties.AwsProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
