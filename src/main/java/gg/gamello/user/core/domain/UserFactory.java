@@ -1,7 +1,7 @@
 package gg.gamello.user.core.domain;
 
 import gg.gamello.user.core.application.RoleApplicationService;
-import gg.gamello.user.core.application.command.RegisterUserCommand;
+import gg.gamello.user.core.application.command.RegisterCommand;
 import gg.gamello.user.core.domain.language.Language;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
@@ -21,7 +21,7 @@ public class UserFactory {
 		this.roleService = roleService;
 	}
 
-	public User create(RegisterUserCommand command) {
+	public User create(RegisterCommand command) {
 		User user = new User();
 		user.setId(UUID.randomUUID());
 		user.setUsername(command.getUsername());
