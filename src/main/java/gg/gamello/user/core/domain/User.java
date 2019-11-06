@@ -53,4 +53,8 @@ public class User extends AbstractAggregateRoot<User> {
 			joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
 			inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"))
 	private Collection<Role> roles;
+
+	public void activate() {
+		this.setActive(true);
+	}
 }
