@@ -7,13 +7,11 @@ import gg.gamello.user.core.domain.UserFactory;
 import gg.gamello.user.core.domain.UserRepository;
 import gg.gamello.user.core.infrastructure.exception.UserAlreadyExistsException;
 import gg.gamello.user.core.infrastructure.exception.UserDoesNotExistsException;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
 
-@Slf4j
 @Service
 public class UserApplicationService {
 
@@ -38,7 +36,6 @@ public class UserApplicationService {
 
 	@Transactional
 	public void activate(ActivateCommand command) throws UserDoesNotExistsException {
-		log.info("userId:{} token:{}",command.getUserId(), command.getToken());
 		User user = findUser(command.getUserId());
 		user.activate();
 		userRepository.save(user);
