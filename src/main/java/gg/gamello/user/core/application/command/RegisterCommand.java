@@ -22,4 +22,12 @@ public class RegisterCommand {
 
 	@NotEmpty(message = "Language can not be empty")
 	String language;
+
+	public void setUsername(String username) {
+		this.username = username.toLowerCase();
+	}
+
+	public void setEmail(String email) {
+		this.email = email.toLowerCase();
+	}
 }
