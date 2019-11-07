@@ -19,7 +19,7 @@ import java.util.UUID;
 @Entity
 @Table(
 		name = "user",
-		uniqueConstraints = {@UniqueConstraint(columnNames = {"username", "slug"})}
+		uniqueConstraints = {@UniqueConstraint(columnNames = {"username", "email", "slug"})}
 )
 @NoArgsConstructor @Getter @Setter(AccessLevel.PACKAGE)
 public class User extends AbstractAggregateRoot<User> {
