@@ -2,6 +2,8 @@ package gg.gamello.user.confirmation.domain;
 
 import gg.gamello.user.confirmation.domain.action.ActionType;
 import gg.gamello.user.confirmation.domain.method.MethodType;
+import gg.gamello.user.confirmation.infrastructure.exception.IncorrectSecretException;
+import gg.gamello.user.confirmation.infrastructure.exception.OutdatedConfirmationException;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -42,4 +44,11 @@ public class Confirmation extends AbstractAggregateRoot<Confirmation> {
 	private Date expiration;
 
 	private String attachment;
+
+	public void check(String secret) throws OutdatedConfirmationException, IncorrectSecretException {
+		if (expiration.compareTo(new Date())<0)
+			throw new OutdatedConfirmationException("Confirmation has expired");
+		if (!secret.equals(this.secret))
+			throw new IncorrectSecretException("Invalid secret");
+	}
 }

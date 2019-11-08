@@ -1,9 +1,15 @@
 package gg.gamello.user.core.application;
 
+import gg.gamello.user.confirmation.aplication.command.ConfirmationCommand;
+import gg.gamello.user.confirmation.aplication.command.CreateCommand;
+import gg.gamello.user.confirmation.domain.action.ActionType;
+import gg.gamello.user.confirmation.domain.method.MethodType;
+import gg.gamello.user.confirmation.infrastructure.exception.ConfirmationException;
 import gg.gamello.user.core.application.command.*;
 import gg.gamello.user.core.domain.User;
 import gg.gamello.user.core.domain.UserFactory;
 import gg.gamello.user.core.domain.UserRepository;
+import gg.gamello.user.core.domain.confirmation.Confirmation;
 import gg.gamello.user.core.infrastructure.exception.PasswordsDontMatchException;
 import gg.gamello.user.core.infrastructure.exception.UserAlreadyExistsException;
 import gg.gamello.user.core.infrastructure.exception.UserDoesNotExistsException;
@@ -23,66 +29,106 @@ public class UserAuthApplicationService {
 	private UserRepository userRepository;
 
 	private final PasswordEncoder encoder;
+	private final Confirmation confirmation;
 
-	public UserAuthApplicationService(UserFactory userFactory, UserRepository userRepository, PasswordEncoder encoder) {
+	public UserAuthApplicationService(UserFactory userFactory, UserRepository userRepository, PasswordEncoder encoder, Confirmation confirmation) {
 		this.userFactory = userFactory;
 		this.userRepository = userRepository;
 		this.encoder = encoder;
+		this.confirmation = confirmation;
 	}
 
-	@Transactional //todo: Add token request
+	@Transactional
 	public User create(RegisterCommand command) throws UserAlreadyExistsException {
 		if (userRepository.existsUserByEmailOrUsername(command.getEmail(), command.getUsername()))
 			throw new UserAlreadyExistsException("User with credentials "  +
 					command.getEmail() + "/" + command.getUsername() + " already exists");
-
 		User user = userFactory.create(command);
+
+		var confirmationRequest = CreateCommand.builder()
+				.userId(user.getId())
+				.action(ActionType.ACTIVATION)
+				.method(MethodType.EMAIL)
+				.build();
+		confirmation.request(confirmationRequest);
+
 		return userRepository.save(user);
 	}
 
-	@Transactional //todo: Add token validation
-	public void activate(ActivateCommand command) throws UserDoesNotExistsException {
-		User user = findUser(command.getUserId());
+	@Transactional
+	public void activate(ActivateCommand command) throws UserDoesNotExistsException, ConfirmationException {
+		User user = find(command.getUserId());
+
+		var confirmationCommand = ConfirmationCommand.builder()
+				.userId(user.getId())
+				.action(ActionType.ACTIVATION)
+				.secret(command.getSecret())
+				.build();
+		confirmation.validate(confirmationCommand);
+
 		user.activate();
 		userRepository.save(user);
 	}
 
-	@Transactional //todo: Add token validation
-	public void delete(DeleteCommand command) throws UserDoesNotExistsException {
-		User user = findUser(command.getUserId());
+	@Transactional
+	public void delete(DeleteCommand command) throws UserDoesNotExistsException, ConfirmationException {
+		User user = find(command.getUserId());
+
+		var confirmationCommand = ConfirmationCommand.builder()
+				.userId(user.getId())
+				.action(ActionType.DELETE)
+				.secret(command.getSecret())
+				.build();
+		confirmation.validate(confirmationCommand);
+
 		userRepository.delete(user);
 	}
 
-	@Transactional //todo: Add token validation
-	public void recover(RecoverCommand command) throws UserDoesNotExistsException, UserIsNotActiveException {
-		User user = findUser(command.getUserId());
+	@Transactional
+	public void recover(RecoverCommand command) throws UserDoesNotExistsException, UserIsNotActiveException, ConfirmationException {
+		User user = find(command.getUserId());
 		user.checkActive();
+
+		var confirmationCommand = ConfirmationCommand.builder()
+				.userId(user.getId())
+				.action(ActionType.PASSWORD)
+				.secret(command.getSecret())
+				.build();
+		confirmation.validate(confirmationCommand);
+
 		user.changePassword(command.getPassword(), encoder);
 		userRepository.save(user);
 	}
 
 	@Transactional
 	public void changePassword(AuthenticationUser authenticationUser, PasswordChangeCommand command) throws PasswordsDontMatchException {
-		User user = findUser(authenticationUser);
+		User user = find(authenticationUser);
 		user.matchPassword(command.getOldPassword(), command.getNewPassword(), encoder);
 		user.changePassword(command.getNewPassword(), encoder);
 		userRepository.save(user);
 	}
 
-	@Transactional //todo: Add token validation
-	public void changeEmail(EmailChangeCommand command) throws UserDoesNotExistsException {
-		User user = findUser(command.getUserId());
-		//todo: obtain email from confirmation and set it
+	@Transactional
+	public void changeEmail(EmailChangeCommand command) throws UserDoesNotExistsException, ConfirmationException {
+		User user = find(command.getUserId());
+
+		var confirmationCommand = ConfirmationCommand.builder()
+				.userId(user.getId())
+				.action(ActionType.EMAIL)
+				.secret(command.getSecret())
+				.build();
+		confirmation.validate(confirmationCommand);
+
 		user.changeEmail(user.getEmail());
 		userRepository.save(user);
 	}
 
-	private User findUser(UUID userId) throws UserDoesNotExistsException {
+	private User find(UUID userId) throws UserDoesNotExistsException {
 		return userRepository.findById(userId)
 				.orElseThrow(() -> new UserDoesNotExistsException(userId.toString(), "User does not exists"));
 	}
 
-	private User findUser(AuthenticationUser user) {
+	private User find(AuthenticationUser user) {
 		return userRepository.findById(user.getId())
 				.orElseThrow(() -> new IllegalStateException("User from authentication does not exists"));
 	}
