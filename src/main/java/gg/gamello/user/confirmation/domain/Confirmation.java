@@ -37,7 +37,7 @@ public class Confirmation extends AbstractAggregateRoot<Confirmation> {
 	@Enumerated(EnumType.STRING)
 	private MethodType methodType;
 
-	private String token;
+	private String secret;
 
 	private Date expiration;
 

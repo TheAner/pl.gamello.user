@@ -15,7 +15,7 @@ public class ConfirmationFactory {
 		confirmation.setActionType(command.getAction());
 		confirmation.setExpiration(command.getAction().getExpirationDate());
 		confirmation.setMethodType(command.getMethod());
-		confirmation.setToken(command.getMethod().getFactory().create());
+		confirmation.setSecret(command.getMethod().getFactory().create());
 		confirmation.setAttachment(command.getAttachment());
 		return confirmation;
 	}

@@ -1,4 +1,4 @@
-package gg.gamello.user.confirmation.domain.token;
+package gg.gamello.user.confirmation.domain.secret;
 
 import gg.gamello.user.confirmation.infrastructure.properties.EmailProperties;
 import org.apache.commons.lang.RandomStringUtils;
@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
-public class EmailFactory implements TokenFactory {
+public class EmailFactory implements SecretFactory {
 
 	@Autowired
 	EmailProperties emailProperties;

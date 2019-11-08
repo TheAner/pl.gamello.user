@@ -1,7 +1,7 @@
 package gg.gamello.user.confirmation.domain.method;
 
-import gg.gamello.user.confirmation.domain.token.EmailFactory;
-import gg.gamello.user.confirmation.domain.token.TokenFactory;
+import gg.gamello.user.confirmation.domain.secret.EmailFactory;
+import gg.gamello.user.confirmation.domain.secret.SecretFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
@@ -12,14 +12,14 @@ import java.util.stream.Stream;
 public enum MethodType {
 	EMAIL(EmailFactory.class);
 
-	private final Class<? extends TokenFactory> factoryClass;
-	private TokenFactory factory;
+	private final Class<? extends SecretFactory> factoryClass;
+	private SecretFactory factory;
 
-	MethodType(Class<? extends TokenFactory> factoryClass) {
+	MethodType(Class<? extends SecretFactory> factoryClass) {
 		this.factoryClass = factoryClass;
 	}
 
-	public TokenFactory getFactory() {
+	public SecretFactory getFactory() {
 		return factory;
 	}
 
