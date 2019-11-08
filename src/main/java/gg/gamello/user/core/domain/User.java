@@ -2,11 +2,14 @@ package gg.gamello.user.core.domain;
 
 import gg.gamello.user.core.domain.language.Language;
 import gg.gamello.user.core.domain.role.Role;
+import gg.gamello.user.core.infrastructure.exception.PasswordsDontMatchException;
+import gg.gamello.user.core.infrastructure.exception.UserIsNotActiveException;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.data.domain.AbstractAggregateRoot;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import javax.persistence.*;
 import java.util.Collection;
@@ -56,5 +59,23 @@ public class User extends AbstractAggregateRoot<User> {
 
 	public void activate() {
 		this.setActive(true);
+	}
+
+	public void checkActive() throws UserIsNotActiveException {
+		if (!this.isActive())
+			throw new UserIsNotActiveException("User is not active");
+	}
+
+	public void changePassword(String password, PasswordEncoder encoder) {
+		this.setPassword(encoder.encode(password));
+	}
+
+	public void matchPassword(String oldPassword, String newPassword, PasswordEncoder encoder) throws PasswordsDontMatchException {
+		if (!encoder.matches(oldPassword, newPassword))
+			throw new PasswordsDontMatchException("Passwords don't match");
+	}
+
+	public void changeEmail(String email) {
+		this.setEmail(email);
 	}
 }
