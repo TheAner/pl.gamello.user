@@ -21,6 +21,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.UUID;
 
 @Service
@@ -33,15 +34,17 @@ public class UserAuthApplicationService {
 	private final PasswordEncoder encoder;
 	private final Confirmation confirmation;
 	private final EmailProvider emailProvider;
+	private final HttpServletRequest httpRequest;
 
 	public UserAuthApplicationService(UserFactory userFactory, UserRepository userRepository,
 									  PasswordEncoder encoder, Confirmation confirmation,
-									  EmailProvider emailProvider) {
+									  EmailProvider emailProvider, HttpServletRequest httpRequest) {
 		this.userFactory = userFactory;
 		this.userRepository = userRepository;
 		this.encoder = encoder;
 		this.confirmation = confirmation;
 		this.emailProvider = emailProvider;
+		this.httpRequest = httpRequest;
 	}
 
 	@Transactional
@@ -114,6 +117,7 @@ public class UserAuthApplicationService {
 		var message = emailProvider.messageBuilder()
 				.user(user.getId(), user.getUsername(), user.getEmail())
 				.language(user.getLanguage())
+				.issuer(httpRequest.getRemoteUser())
 				.useTemplateChanged(ActionType.PASSWORD)
 				.build();
 		emailProvider.send(message);
@@ -137,6 +141,7 @@ public class UserAuthApplicationService {
 		var message = emailProvider.messageBuilder()
 				.user(user.getId(), user.getUsername(), user.getEmail())
 				.language(user.getLanguage())
+				.issuer(httpRequest.getRemoteUser())
 				.useTemplateChanged(ActionType.EMAIL)
 				.build();
 		emailProvider.send(message);

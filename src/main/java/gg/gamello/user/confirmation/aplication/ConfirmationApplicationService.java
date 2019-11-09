@@ -12,6 +12,7 @@ import gg.gamello.user.confirmation.infrastructure.exception.OutdatedConfirmatio
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -22,9 +23,13 @@ public class ConfirmationApplicationService {
 
 	private ConfirmationRepository confirmationRepository;
 
-	public ConfirmationApplicationService(ConfirmationFactory confirmationFactory, ConfirmationRepository confirmationRepository) {
+	private final HttpServletRequest httpRequest;
+
+	public ConfirmationApplicationService(ConfirmationFactory confirmationFactory, ConfirmationRepository confirmationRepository,
+										  HttpServletRequest httpRequest) {
 		this.confirmationFactory = confirmationFactory;
 		this.confirmationRepository = confirmationRepository;
+		this.httpRequest = httpRequest;
 	}
 
 	@Transactional
@@ -36,7 +41,7 @@ public class ConfirmationApplicationService {
 		var message = command.getMethod().getProvider().messageBuilder()
 				.fromCommand(command)
 				.secret(confirmation.getSecret())
-				.issuer("127.0.0.1")
+				.issuer(httpRequest.getRemoteUser())
 				.build();
 		command.getMethod().getProvider().send(message);
 
