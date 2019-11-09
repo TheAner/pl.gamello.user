@@ -118,9 +118,10 @@ public class UserAuthApplicationService {
 				.action(ActionType.EMAIL)
 				.secret(command.getSecret())
 				.build();
-		confirmation.validate(confirmationCommand);
+		String newEmail = confirmation.validate(confirmationCommand)
+				.orElse(user.getEmail());
 
-		user.changeEmail(user.getEmail());
+		user.changeEmail(newEmail);
 		userRepository.save(user);
 	}
 
