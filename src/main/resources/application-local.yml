@@ -19,3 +19,6 @@ aws:
     secret: +ehEk0uEOyEm2K8Q9Mm9ZVQrFYtRwk7QnIuIrzsM
     regions:
         s3: eu-central-1
+confirmation:
+    email:
+        service-url: "http://email/api/transactional/single"

@@ -10,6 +10,16 @@ import org.springframework.stereotype.Component;
 public class EmailProperties {
 
 	/**
+	 * Should email be send (true), or just logged (false)
+	 */
+	private boolean enabled = true;
+
+	/**
+	 * Email service route
+	 */
+	private String serviceUrl;
+
+	/**
 	 * Token generator configuration
 	 */
 	private Token token = new Token();
