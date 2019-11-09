@@ -5,6 +5,7 @@ import gg.gamello.user.confirmation.aplication.command.CreateCommand;
 import gg.gamello.user.confirmation.domain.action.ActionType;
 import gg.gamello.user.confirmation.domain.method.MethodType;
 import gg.gamello.user.confirmation.infrastructure.exception.ConfirmationException;
+import gg.gamello.user.confirmation.infrastructure.provider.email.EmailProvider;
 import gg.gamello.user.core.application.command.*;
 import gg.gamello.user.core.application.dto.UserDtoAssembler;
 import gg.gamello.user.core.domain.User;
@@ -31,12 +32,16 @@ public class UserAuthApplicationService {
 
 	private final PasswordEncoder encoder;
 	private final Confirmation confirmation;
+	private final EmailProvider emailProvider;
 
-	public UserAuthApplicationService(UserFactory userFactory, UserRepository userRepository, PasswordEncoder encoder, Confirmation confirmation) {
+	public UserAuthApplicationService(UserFactory userFactory, UserRepository userRepository,
+									  PasswordEncoder encoder, Confirmation confirmation,
+									  EmailProvider emailProvider) {
 		this.userFactory = userFactory;
 		this.userRepository = userRepository;
 		this.encoder = encoder;
 		this.confirmation = confirmation;
+		this.emailProvider = emailProvider;
 	}
 
 	@Transactional
@@ -105,6 +110,14 @@ public class UserAuthApplicationService {
 	public void changePassword(AuthenticationUser authenticationUser, PasswordChangeCommand command) throws PasswordsDontMatchException {
 		User user = find(authenticationUser);
 		user.matchPassword(command.getOldPassword(), command.getNewPassword(), encoder);
+
+		var message = emailProvider.messageBuilder()
+				.user(user.getId(), user.getUsername(), user.getEmail())
+				.language(user.getLanguage())
+				.useTemplateChanged(ActionType.PASSWORD)
+				.build();
+		emailProvider.send(message);
+
 		user.changePassword(command.getNewPassword(), encoder);
 		userRepository.save(user);
 	}
@@ -120,6 +133,13 @@ public class UserAuthApplicationService {
 				.build();
 		String newEmail = confirmation.validate(confirmationCommand)
 				.orElse(user.getEmail());
+
+		var message = emailProvider.messageBuilder()
+				.user(user.getId(), user.getUsername(), user.getEmail())
+				.language(user.getLanguage())
+				.useTemplateChanged(ActionType.EMAIL)
+				.build();
+		emailProvider.send(message);
 
 		user.changeEmail(newEmail);
 		userRepository.save(user);
