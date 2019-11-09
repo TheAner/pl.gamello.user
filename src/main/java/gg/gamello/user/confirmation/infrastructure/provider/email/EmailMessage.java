@@ -69,6 +69,8 @@ class EmailMessage extends Message {
 			this.user(command.getUser().getId(), command.getUser().getUsername(), command.getUser().getEmail());
 			this.language(command.getUser().getLanguage());
 			this.template = this.template = "user." + command.getAction().toString().toLowerCase();
+			if (command.getAction().equals(ActionType.EMAIL)) //Email confirmation routed to new email
+				this.email = command.getAttachment();
 			return this;
 		}
 
