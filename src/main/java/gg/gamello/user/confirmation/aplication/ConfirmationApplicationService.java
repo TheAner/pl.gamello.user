@@ -29,10 +29,17 @@ public class ConfirmationApplicationService {
 
 	@Transactional
 	public Confirmation create(CreateCommand command) {
-		var optionalConfirmation = confirmationRepository.findByUserIdAndActionType(command.getUserId(), command.getAction());
+		var optionalConfirmation = confirmationRepository.findByUserIdAndActionType(command.getUser().getId(), command.getAction());
 		optionalConfirmation.ifPresent(confirmation -> confirmationRepository.delete(confirmation));
-
 		Confirmation confirmation = confirmationFactory.create(command);
+
+		var message = command.getMethod().getProvider().messageBuilder()
+				.fromCommand(command)
+				.secret(confirmation.getSecret())
+				.issuer("127.0.0.1")
+				.build();
+		command.getMethod().getProvider().send(message);
+
 		confirmationRepository.save(confirmation);
 		return confirmation;
 	}

@@ -4,6 +4,7 @@ import gg.gamello.user.confirmation.aplication.command.CreateCommand;
 import gg.gamello.user.confirmation.domain.action.ActionType;
 import gg.gamello.user.confirmation.domain.method.MethodType;
 import gg.gamello.user.core.application.command.EmailChangeRequestCommand;
+import gg.gamello.user.core.application.dto.UserDtoAssembler;
 import gg.gamello.user.core.domain.User;
 import gg.gamello.user.core.domain.UserRepository;
 import gg.gamello.user.core.domain.confirmation.Confirmation;
@@ -27,7 +28,7 @@ public class UserApplicationService {
 	public void createDeleteRequest(AuthenticationUser authenticationUser) {
 		User user = findUser(authenticationUser);
 		var confirmationRequest = CreateCommand.builder()
-				.userId(user.getId())
+				.user(UserDtoAssembler.convertDefault(user))
 				.action(ActionType.DELETE)
 				.method(MethodType.EMAIL)
 				.build();
@@ -38,7 +39,7 @@ public class UserApplicationService {
 	public void createRecoverRequest(AuthenticationUser authenticationUser) {
 		User user = findUser(authenticationUser);
 		var confirmationRequest = CreateCommand.builder()
-				.userId(user.getId())
+				.user(UserDtoAssembler.convertDefault(user))
 				.action(ActionType.PASSWORD)
 				.method(MethodType.EMAIL)
 				.build();
@@ -49,7 +50,7 @@ public class UserApplicationService {
 	public void createEmailChangeRequest(AuthenticationUser authenticationUser, EmailChangeRequestCommand command) {
 		User user = findUser(authenticationUser);
 		var confirmationRequest = CreateCommand.builder()
-				.userId(user.getId())
+				.user(UserDtoAssembler.convertDefault(user))
 				.action(ActionType.EMAIL)
 				.method(MethodType.EMAIL)
 				.attachment(command.getEmail())

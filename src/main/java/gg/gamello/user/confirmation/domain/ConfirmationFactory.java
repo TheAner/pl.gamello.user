@@ -11,7 +11,7 @@ public class ConfirmationFactory {
 	public Confirmation create(CreateCommand command) {
 		Confirmation confirmation = new Confirmation();
 		confirmation.setId(UUID.randomUUID());
-		confirmation.setUserId(command.getUserId());
+		confirmation.setUserId(command.getUser().getId());
 		confirmation.setActionType(command.getAction());
 		confirmation.setExpiration(command.getAction().getExpirationDate());
 		confirmation.setMethodType(command.getMethod());

@@ -2,14 +2,13 @@ package gg.gamello.user.confirmation.aplication.command;
 
 import gg.gamello.user.confirmation.domain.action.ActionType;
 import gg.gamello.user.confirmation.domain.method.MethodType;
+import gg.gamello.user.core.application.dto.UserDto;
 import lombok.Getter;
-
-import java.util.UUID;
 
 @Getter
 public class CreateCommand {
 
-	private UUID userId;
+	private UserDto user;
 
 	private ActionType action;
 
@@ -22,7 +21,7 @@ public class CreateCommand {
 	}
 
 	public static class Builder {
-		private UUID userId;
+		private UserDto user;
 
 		private ActionType action;
 
@@ -30,8 +29,8 @@ public class CreateCommand {
 
 		private String attachment;
 
-		public Builder userId(UUID userId){
-			this.userId = userId;
+		public Builder user(UserDto user){
+			this.user = user;
 			return this;
 		}
 
@@ -51,15 +50,15 @@ public class CreateCommand {
 		}
 
 		public CreateCommand build(){
-			if (userId == null)
-				throw new IllegalStateException("userId can not be empty");
+			if (user == null)
+				throw new IllegalStateException("user can not be null");
 			if (action == null)
 				throw new IllegalStateException("action can not be empty");
 			if (method == null)
 				throw new IllegalStateException("method can not be empty");
 
 			CreateCommand command = new CreateCommand();
-			command.userId = userId;
+			command.user = user;
 			command.action = action;
 			command.method = method;
 			command.attachment = attachment;

@@ -6,6 +6,7 @@ import gg.gamello.user.confirmation.domain.action.ActionType;
 import gg.gamello.user.confirmation.domain.method.MethodType;
 import gg.gamello.user.confirmation.infrastructure.exception.ConfirmationException;
 import gg.gamello.user.core.application.command.*;
+import gg.gamello.user.core.application.dto.UserDtoAssembler;
 import gg.gamello.user.core.domain.User;
 import gg.gamello.user.core.domain.UserFactory;
 import gg.gamello.user.core.domain.UserRepository;
@@ -46,7 +47,7 @@ public class UserAuthApplicationService {
 		User user = userFactory.create(command);
 
 		var confirmationRequest = CreateCommand.builder()
-				.userId(user.getId())
+				.user(UserDtoAssembler.convertDefault(user))
 				.action(ActionType.ACTIVATION)
 				.method(MethodType.EMAIL)
 				.build();
