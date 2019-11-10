@@ -92,4 +92,8 @@ public class User extends AbstractAggregateRoot<User> {
 	public void changeVisibleName(String visibleName) {
 		this.setVisibleName(visibleName);
 	}
+
+	public void changeAvatarLocation(String location) {
+		this.setAvatarLocation(location);
+	}
 }

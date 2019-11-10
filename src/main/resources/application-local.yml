@@ -23,3 +23,7 @@ confirmation:
     email:
         service-url: "http://email/api/transactional/single"
         enabled: false
+avatar:
+    bucket-name: gamello-upload
+    avatars-location: test/images/avatars/
+    default-avatar-location: app/images/default_avatar/default_avatar

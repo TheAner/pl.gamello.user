@@ -1,5 +1,7 @@
 package gg.gamello.user.core.application;
 
+import gg.gamello.user.avatar.AvatarService;
+import gg.gamello.user.avatar.exception.AvatarException;
 import gg.gamello.user.core.application.command.LanguageChangeCommand;
 import gg.gamello.user.core.application.command.SlugChangeCommand;
 import gg.gamello.user.core.application.command.VisibleNameChangeCommand;
@@ -11,14 +13,19 @@ import gg.gamello.user.core.infrastructure.exception.UserAlreadyExistsException;
 import gg.gamello.user.core.infrastructure.exception.UserDoesNotExistsException;
 import gg.gamello.user.infrastructure.security.AuthenticationUser;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 
 @Service
 public class UserApplicationService {
 
 	private final UserRepository userRepository;
+	private final AvatarService avatarService;
 
-	public UserApplicationService(UserRepository userRepository) {
+	public UserApplicationService(UserRepository userRepository, AvatarService avatarService) {
 		this.userRepository = userRepository;
+		this.avatarService = avatarService;
 	}
 
 	public UserDto getLoggedUser(AuthenticationUser user) {
@@ -48,6 +55,17 @@ public class UserApplicationService {
 	public void changeVisibleName(AuthenticationUser authenticationUser, VisibleNameChangeCommand command) {
 		User user = find(authenticationUser);
 		user.changeVisibleName(command.getVisibleName());
+		userRepository.save(user);
+	}
+
+	public void changeAvatar(AuthenticationUser authenticationUser, MultipartFile image) throws AvatarException, InterruptedException {
+		User user = find(authenticationUser);
+
+		var avatars = avatarService.generateAvatars(image);
+		var location = avatarService.uploadListOfAvatars(avatars, user.getUsername());
+		avatarService.deleteAvatarsInLocation(user.getAvatarLocation());
+
+		user.changeAvatarLocation(location);
 		userRepository.save(user);
 	}
 

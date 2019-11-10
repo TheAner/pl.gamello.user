@@ -1,5 +1,6 @@
 package gg.gamello.user.core.ui;
 
+import gg.gamello.user.avatar.exception.AvatarException;
 import gg.gamello.user.core.application.UserApplicationService;
 import gg.gamello.user.core.application.command.LanguageChangeCommand;
 import gg.gamello.user.core.application.command.SlugChangeCommand;
@@ -12,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 public class UserController {
@@ -49,6 +51,13 @@ public class UserController {
 	public ResponseEntity<Void> visibleNameChange(@AuthenticationPrincipal AuthenticationUser user,
 										   @RequestBody VisibleNameChangeCommand command) {
 		applicationService.changeVisibleName(user, command);
+		return ResponseEntity.ok().build();
+	}
+
+	@PostMapping("/change/avatar")
+	public ResponseEntity<Void> avatarChange(@AuthenticationPrincipal AuthenticationUser user,
+											 @RequestParam("file") MultipartFile image) throws AvatarException, InterruptedException {
+		applicationService.changeAvatar(user, image);
 		return ResponseEntity.ok().build();
 	}
 }
