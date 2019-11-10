@@ -1,5 +1,6 @@
 package gg.gamello.user.core.application;
 
+import gg.gamello.user.core.application.command.LanguageChangeCommand;
 import gg.gamello.user.core.application.dto.UserDto;
 import gg.gamello.user.core.application.dto.UserDtoAssembler;
 import gg.gamello.user.core.domain.User;
@@ -21,6 +22,12 @@ public class UserApplicationService {
 
 	public UserDto getLoggedUser(AuthenticationUser user) {
 		return UserDtoAssembler.convertDefault(find(user));
+	}
+
+	public void changeLanguage(AuthenticationUser authenticationUser, LanguageChangeCommand command) {
+		User user = find(authenticationUser);
+		user.changeLanguage(command.getLanguage());
+		userRepository.save(user);
 	}
 
 	private User find(UUID userId) throws UserDoesNotExistsException {

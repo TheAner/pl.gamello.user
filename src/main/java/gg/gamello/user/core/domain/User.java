@@ -80,4 +80,8 @@ public class User extends AbstractAggregateRoot<User> {
 	public void changeEmail(String email) {
 		this.setEmail(email);
 	}
+
+	public void changeLanguage(String language) {
+		this.setLanguage(Language.mapLanguage(language));
+	}
 }
