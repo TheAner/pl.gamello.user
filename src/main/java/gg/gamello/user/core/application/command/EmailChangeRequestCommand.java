@@ -10,4 +10,8 @@ public class EmailChangeRequestCommand {
 	@NotEmpty(message = "Email can not be empty")
 	@Email(message = "Email should be correctly")
 	String email;
+
+	public void setEmail(String email) {
+		this.email = email.toLowerCase();
+	}
 }
