@@ -19,6 +19,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.UUID;
+
 @Slf4j
 @Service
 public class UserRequestApplicationService {
@@ -35,7 +37,7 @@ public class UserRequestApplicationService {
 	}
 
 	@Transactional
-	public User create(RegisterCommand command) throws UserAlreadyExistsException {
+	public UUID create(RegisterCommand command) throws UserAlreadyExistsException {
 		if (userRepository.existsUserByEmailOrUsername(command.getEmail(), command.getUsername()))
 			throw new UserAlreadyExistsException("User with credentials "  +
 					command.getEmail() + "/" + command.getUsername() + " already exists");
@@ -48,7 +50,7 @@ public class UserRequestApplicationService {
 				.build();
 		confirmation.request(confirmationRequest);
 
-		return userRepository.save(user);
+		return userRepository.save(user).getId();
 	}
 
 	public void createDeleteRequest(AuthenticationUser authenticationUser) {

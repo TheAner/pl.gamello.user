@@ -33,7 +33,7 @@ public class ConfirmationApplicationService {
 	}
 
 	@Transactional
-	public Confirmation create(CreateCommand command) {
+	public UUID create(CreateCommand command) {
 		var optionalConfirmation = confirmationRepository.findByUserIdAndActionType(command.getUser().getId(), command.getAction());
 		optionalConfirmation.ifPresent(confirmation -> confirmationRepository.delete(confirmation));
 		Confirmation confirmation = confirmationFactory.create(command);
@@ -45,8 +45,7 @@ public class ConfirmationApplicationService {
 				.build();
 		command.getMethod().getProvider().send(message);
 
-		confirmationRepository.save(confirmation);
-		return confirmation;
+		return confirmationRepository.save(confirmation).getId();
 	}
 
 	@Transactional
