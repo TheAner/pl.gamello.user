@@ -12,8 +12,8 @@ public class RegisterCommand {
 	@Length(min = 3, max = 24, message = "Username must be between {min} and {max} characters long")
 	String username;
 
-	@NotEmpty(message = "EmailRequest can not be empty")
-	@Email(message = "EmailRequest should be correctly")
+	@NotEmpty(message = "Email can not be empty")
+	@Email(message = "Email should be correctly")
 	String email;
 
 	@NotEmpty(message = "Password can not be empty")

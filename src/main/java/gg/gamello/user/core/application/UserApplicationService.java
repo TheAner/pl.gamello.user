@@ -1,70 +1,135 @@
 package gg.gamello.user.core.application;
 
-import gg.gamello.user.confirmation.aplication.command.CreateCommand;
+import gg.gamello.user.confirmation.aplication.command.ConfirmationCommand;
 import gg.gamello.user.confirmation.domain.action.ActionType;
-import gg.gamello.user.confirmation.domain.method.MethodType;
-import gg.gamello.user.core.application.command.EmailChangeRequestCommand;
-import gg.gamello.user.core.application.dto.UserDtoAssembler;
+import gg.gamello.user.confirmation.infrastructure.exception.ConfirmationException;
+import gg.gamello.user.confirmation.infrastructure.provider.email.EmailProvider;
+import gg.gamello.user.core.application.command.ConfirmCommand;
+import gg.gamello.user.core.application.command.PasswordChangeCommand;
+import gg.gamello.user.core.application.command.RecoverConfirmCommand;
 import gg.gamello.user.core.domain.User;
 import gg.gamello.user.core.domain.UserRepository;
 import gg.gamello.user.core.domain.confirmation.Confirmation;
+import gg.gamello.user.core.infrastructure.exception.PasswordsDontMatchException;
 import gg.gamello.user.core.infrastructure.exception.UserDoesNotExistsException;
 import gg.gamello.user.infrastructure.security.AuthenticationUser;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.UUID;
 
 @Service
 public class UserApplicationService {
 
-	private UserRepository userRepository;
-	private Confirmation confirmation;
+	private final UserRepository userRepository;
+	private final PasswordEncoder encoder;
+	private final Confirmation confirmation;
+	private final EmailProvider emailProvider;
+	private final HttpServletRequest httpRequest;
 
-	public UserApplicationService(UserRepository userRepository, Confirmation confirmation) {
+	public UserApplicationService(UserRepository userRepository, PasswordEncoder encoder,
+								  Confirmation confirmation, EmailProvider emailProvider,
+								  HttpServletRequest httpRequest) {
 		this.userRepository = userRepository;
+		this.encoder = encoder;
 		this.confirmation = confirmation;
+		this.emailProvider = emailProvider;
+		this.httpRequest = httpRequest;
 	}
 
-	public void createDeleteRequest(AuthenticationUser authenticationUser) {
-		User user = findUser(authenticationUser);
-		var confirmationRequest = CreateCommand.builder()
-				.user(UserDtoAssembler.convertDefault(user))
+	@Transactional
+	public void activate(ConfirmCommand command) throws UserDoesNotExistsException, ConfirmationException {
+		User user = find(command.getUserId());
+
+		var confirmationCommand = ConfirmationCommand.builder()
+				.userId(user.getId())
+				.action(ActionType.ACTIVATION)
+				.secret(command.getSecret())
+				.build();
+		confirmation.validate(confirmationCommand);
+
+		user.activate();
+		userRepository.save(user);
+	}
+
+	@Transactional
+	public void delete(ConfirmCommand command) throws UserDoesNotExistsException, ConfirmationException {
+		User user = find(command.getUserId());
+
+		var confirmationCommand = ConfirmationCommand.builder()
+				.userId(user.getId())
 				.action(ActionType.DELETE)
-				.method(MethodType.EMAIL)
+				.secret(command.getSecret())
 				.build();
+		confirmation.validate(confirmationCommand);
 
-		confirmation.request(confirmationRequest);
+		userRepository.delete(user);
 	}
 
-	public void createRecoverRequest(AuthenticationUser authenticationUser) {
-		User user = findUser(authenticationUser);
-		var confirmationRequest = CreateCommand.builder()
-				.user(UserDtoAssembler.convertDefault(user))
+	@Transactional
+	public void recover(RecoverConfirmCommand command) throws UserDoesNotExistsException, ConfirmationException {
+		User user = find(command.getUserId());
+
+		var confirmationCommand = ConfirmationCommand.builder()
+				.userId(user.getId())
 				.action(ActionType.PASSWORD)
-				.method(MethodType.EMAIL)
+				.secret(command.getSecret())
 				.build();
+		confirmation.validate(confirmationCommand);
 
-		confirmation.request(confirmationRequest);
+		user.changePassword(command.getPassword(), encoder);
+		userRepository.save(user);
 	}
 
-	public void createEmailChangeRequest(AuthenticationUser authenticationUser, EmailChangeRequestCommand command) {
-		User user = findUser(authenticationUser);
-		var confirmationRequest = CreateCommand.builder()
-				.user(UserDtoAssembler.convertDefault(user))
+	@Transactional
+	public void changePassword(AuthenticationUser authenticationUser, PasswordChangeCommand command) throws PasswordsDontMatchException {
+		User user = find(authenticationUser);
+		user.matchPassword(command.getOldPassword(), command.getNewPassword(), encoder);
+
+		var message = emailProvider.messageBuilder()
+				.user(user.getId(), user.getUsername(), user.getEmail())
+				.language(user.getLanguage())
+				.issuer(httpRequest.getRemoteUser())
+				.useTemplateChanged(ActionType.PASSWORD)
+				.build();
+		emailProvider.send(message);
+
+		user.changePassword(command.getNewPassword(), encoder);
+		userRepository.save(user);
+	}
+
+	@Transactional
+	public void changeEmail(ConfirmCommand command) throws UserDoesNotExistsException, ConfirmationException {
+		User user = find(command.getUserId());
+
+		var confirmationCommand = ConfirmationCommand.builder()
+				.userId(user.getId())
 				.action(ActionType.EMAIL)
-				.method(MethodType.EMAIL)
-				.attachment(command.getEmail())
+				.secret(command.getSecret())
 				.build();
+		String newEmail = confirmation.validate(confirmationCommand)
+				.orElse(user.getEmail());
 
-		confirmation.request(confirmationRequest);
+		var message = emailProvider.messageBuilder()
+				.user(user.getId(), user.getUsername(), user.getEmail())
+				.language(user.getLanguage())
+				.issuer(httpRequest.getRemoteUser())
+				.useTemplateChanged(ActionType.EMAIL)
+				.build();
+		emailProvider.send(message);
+
+		user.changeEmail(newEmail);
+		userRepository.save(user);
 	}
 
-	private User findUser(UUID userId) throws UserDoesNotExistsException {
+	private User find(UUID userId) throws UserDoesNotExistsException {
 		return userRepository.findById(userId)
 				.orElseThrow(() -> new UserDoesNotExistsException(userId.toString(), "User does not exists"));
 	}
 
-	private User findUser(AuthenticationUser user) {
+	private User find(AuthenticationUser user) {
 		return userRepository.findById(user.getId())
 				.orElseThrow(() -> new IllegalStateException("User from authentication does not exists"));
 	}
