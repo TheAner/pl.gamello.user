@@ -9,7 +9,7 @@ import gg.gamello.user.confirmation.infrastructure.exception.OutdatedConfirmatio
 import java.util.Optional;
 
 public interface Confirmation {
-	public void request(CreateCommand command);
-	public void check(ConfirmationCommand command) throws IncorrectSecretException, ConfirmationDoesNotExistsException, OutdatedConfirmationException;
-	public Optional<String> validate(ConfirmationCommand command) throws IncorrectSecretException, ConfirmationDoesNotExistsException, OutdatedConfirmationException;
+	void request(CreateCommand command);
+	void check(ConfirmationCommand command) throws IncorrectSecretException, ConfirmationDoesNotExistsException, OutdatedConfirmationException;
+	Optional<String> validate(ConfirmationCommand command) throws IncorrectSecretException, ConfirmationDoesNotExistsException, OutdatedConfirmationException;
 }
