@@ -11,8 +11,6 @@ import gg.gamello.user.core.infrastructure.exception.UserDoesNotExistsException;
 import gg.gamello.user.infrastructure.security.AuthenticationUser;
 import org.springframework.stereotype.Service;
 
-import java.util.UUID;
-
 @Service
 public class UserApplicationService {
 
@@ -24,6 +22,10 @@ public class UserApplicationService {
 
 	public UserDto getLoggedUser(AuthenticationUser user) {
 		return UserDtoAssembler.convertDefault(find(user));
+	}
+
+	public UserDto getUserBySlug(String slug) throws UserDoesNotExistsException {
+		return UserDtoAssembler.convertDefault(find(slug));
 	}
 
 	public void changeLanguage(AuthenticationUser authenticationUser, LanguageChangeCommand command) {
@@ -42,9 +44,9 @@ public class UserApplicationService {
 		userRepository.save(user);
 	}
 
-	private User find(UUID userId) throws UserDoesNotExistsException {
-		return userRepository.findById(userId)
-				.orElseThrow(() -> new UserDoesNotExistsException(userId.toString(), "User does not exists"));
+	private User find(String slug) throws UserDoesNotExistsException {
+		return userRepository.findBySlug(slug)
+				.orElseThrow(() -> new UserDoesNotExistsException(slug, "User does not exists"));
 	}
 
 	private User find(AuthenticationUser user) {

@@ -5,14 +5,12 @@ import gg.gamello.user.core.application.command.LanguageChangeCommand;
 import gg.gamello.user.core.application.command.SlugChangeCommand;
 import gg.gamello.user.core.application.dto.UserDto;
 import gg.gamello.user.core.infrastructure.exception.UserAlreadyExistsException;
+import gg.gamello.user.core.infrastructure.exception.UserDoesNotExistsException;
 import gg.gamello.user.infrastructure.security.AuthenticationUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 public class UserController {
@@ -23,6 +21,12 @@ public class UserController {
 	@GetMapping("/")
 	public ResponseEntity<UserDto> getLoggedUser(@AuthenticationPrincipal AuthenticationUser user) {
 		var userDto = applicationService.getLoggedUser(user);
+		return ResponseEntity.ok(userDto);
+	}
+
+	@GetMapping("/special/{slug}")
+	public ResponseEntity<UserDto> getLoggedUser(@PathVariable String slug) throws UserDoesNotExistsException {
+		var userDto = applicationService.getUserBySlug(slug);
 		return ResponseEntity.ok(userDto);
 	}
 

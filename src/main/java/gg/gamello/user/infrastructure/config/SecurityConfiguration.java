@@ -45,7 +45,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 				.permitAll()
 				.antMatchers("/confirm/**", "/recover")
 				.permitAll()
-				.antMatchers("/", "/change/**")
+				.anyRequest()
 				.authenticated();
 
 		http
