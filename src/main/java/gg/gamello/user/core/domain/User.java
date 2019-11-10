@@ -88,4 +88,8 @@ public class User extends AbstractAggregateRoot<User> {
 	public void changeSlug(String slug) {
 		this.setSlug(slug);
 	}
+
+	public void changeVisibleName(String visibleName) {
+		this.setVisibleName(visibleName);
+	}
 }

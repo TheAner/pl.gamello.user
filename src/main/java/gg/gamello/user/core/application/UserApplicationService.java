@@ -2,6 +2,7 @@ package gg.gamello.user.core.application;
 
 import gg.gamello.user.core.application.command.LanguageChangeCommand;
 import gg.gamello.user.core.application.command.SlugChangeCommand;
+import gg.gamello.user.core.application.command.VisibleNameChangeCommand;
 import gg.gamello.user.core.application.dto.UserDto;
 import gg.gamello.user.core.application.dto.UserDtoAssembler;
 import gg.gamello.user.core.domain.User;
@@ -41,6 +42,12 @@ public class UserApplicationService {
 					command.getSlug() + " already exists");
 		}
 		user.changeSlug(command.getSlug());
+		userRepository.save(user);
+	}
+
+	public void changeVisibleName(AuthenticationUser authenticationUser, VisibleNameChangeCommand command) {
+		User user = find(authenticationUser);
+		user.changeVisibleName(command.getVisibleName());
 		userRepository.save(user);
 	}
 

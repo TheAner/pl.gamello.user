@@ -3,6 +3,7 @@ package gg.gamello.user.core.ui;
 import gg.gamello.user.core.application.UserApplicationService;
 import gg.gamello.user.core.application.command.LanguageChangeCommand;
 import gg.gamello.user.core.application.command.SlugChangeCommand;
+import gg.gamello.user.core.application.command.VisibleNameChangeCommand;
 import gg.gamello.user.core.application.dto.UserDto;
 import gg.gamello.user.core.infrastructure.exception.UserAlreadyExistsException;
 import gg.gamello.user.core.infrastructure.exception.UserDoesNotExistsException;
@@ -41,6 +42,13 @@ public class UserController {
 	public ResponseEntity<Void> slugChange(@AuthenticationPrincipal AuthenticationUser user,
 												   @RequestBody SlugChangeCommand command) throws UserAlreadyExistsException {
 		applicationService.changeSlug(user, command);
+		return ResponseEntity.ok().build();
+	}
+
+	@PostMapping("/change/name")
+	public ResponseEntity<Void> visibleNameChange(@AuthenticationPrincipal AuthenticationUser user,
+										   @RequestBody VisibleNameChangeCommand command) {
+		applicationService.changeVisibleName(user, command);
 		return ResponseEntity.ok().build();
 	}
 }
