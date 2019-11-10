@@ -39,7 +39,7 @@ public class UserRequestApplicationService {
 	@Transactional
 	public UUID create(RegisterCommand command) throws UserAlreadyExistsException {
 		if (userRepository.existsUserByEmailOrUsername(command.getEmail(), command.getUsername()))
-			throw new UserAlreadyExistsException("User with credentials "  +
+			throw new UserAlreadyExistsException("User with credentials " +
 					command.getEmail() + "/" + command.getUsername() + " already exists");
 		User user = userFactory.create(command);
 

@@ -33,7 +33,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 	}
 
 	@Bean
-	public PasswordEncoder passwordEncoder(){
+	public PasswordEncoder passwordEncoder() {
 		return new BCryptPasswordEncoder();
 	}
 
@@ -43,7 +43,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 				.authorizeRequests()
 				.antMatchers(HttpMethod.POST, "/")
 				.permitAll()
-				.antMatchers( "/activate/**", "/recover", "/validate/**", "/api/**", "/id/**", "/special/**")
+				.antMatchers("/confirm/**", "/recover")
 				.permitAll()
 				.antMatchers("/", "/change/**")
 				.authenticated();
@@ -65,7 +65,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 	public void configure(WebSecurity web) {
 		web.ignoring()
 				.antMatchers(HttpMethod.POST, "/")
-				.antMatchers( "/activate/**", "/recover", "/validate/**", "/api/**", "/id/**", "/special/**")
+				.antMatchers("/confirm/**", "/recover")
 				.antMatchers("/error");
 	}
 
