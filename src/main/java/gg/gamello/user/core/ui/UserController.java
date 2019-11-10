@@ -2,7 +2,9 @@ package gg.gamello.user.core.ui;
 
 import gg.gamello.user.core.application.UserApplicationService;
 import gg.gamello.user.core.application.command.LanguageChangeCommand;
+import gg.gamello.user.core.application.command.SlugChangeCommand;
 import gg.gamello.user.core.application.dto.UserDto;
+import gg.gamello.user.core.infrastructure.exception.UserAlreadyExistsException;
 import gg.gamello.user.infrastructure.security.AuthenticationUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -25,9 +27,16 @@ public class UserController {
 	}
 
 	@PostMapping("/change/language")
-	public ResponseEntity<Void> emailChangeRequest(@AuthenticationPrincipal AuthenticationUser user,
+	public ResponseEntity<Void> languageChange(@AuthenticationPrincipal AuthenticationUser user,
 													   @RequestBody LanguageChangeCommand command) {
 		applicationService.changeLanguage(user, command);
+		return ResponseEntity.ok().build();
+	}
+
+	@PostMapping("/change/slug")
+	public ResponseEntity<Void> slugChange(@AuthenticationPrincipal AuthenticationUser user,
+												   @RequestBody SlugChangeCommand command) throws UserAlreadyExistsException {
+		applicationService.changeSlug(user, command);
 		return ResponseEntity.ok().build();
 	}
 }

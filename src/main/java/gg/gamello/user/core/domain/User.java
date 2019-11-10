@@ -84,4 +84,8 @@ public class User extends AbstractAggregateRoot<User> {
 	public void changeLanguage(String language) {
 		this.setLanguage(Language.mapLanguage(language));
 	}
+
+	public void changeSlug(String slug) {
+		this.setSlug(slug);
+	}
 }

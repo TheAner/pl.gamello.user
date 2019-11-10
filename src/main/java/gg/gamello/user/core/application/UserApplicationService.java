@@ -1,10 +1,12 @@
 package gg.gamello.user.core.application;
 
 import gg.gamello.user.core.application.command.LanguageChangeCommand;
+import gg.gamello.user.core.application.command.SlugChangeCommand;
 import gg.gamello.user.core.application.dto.UserDto;
 import gg.gamello.user.core.application.dto.UserDtoAssembler;
 import gg.gamello.user.core.domain.User;
 import gg.gamello.user.core.domain.UserRepository;
+import gg.gamello.user.core.infrastructure.exception.UserAlreadyExistsException;
 import gg.gamello.user.core.infrastructure.exception.UserDoesNotExistsException;
 import gg.gamello.user.infrastructure.security.AuthenticationUser;
 import org.springframework.stereotype.Service;
@@ -27,6 +29,16 @@ public class UserApplicationService {
 	public void changeLanguage(AuthenticationUser authenticationUser, LanguageChangeCommand command) {
 		User user = find(authenticationUser);
 		user.changeLanguage(command.getLanguage());
+		userRepository.save(user);
+	}
+
+	public void changeSlug(AuthenticationUser authenticationUser, SlugChangeCommand command) throws UserAlreadyExistsException {
+		User user = find(authenticationUser);
+		if (userRepository.existsBySlug(command.getSlug())) {
+			throw new UserAlreadyExistsException("User with slug " +
+					command.getSlug() + " already exists");
+		}
+		user.changeSlug(command.getSlug());
 		userRepository.save(user);
 	}
 
