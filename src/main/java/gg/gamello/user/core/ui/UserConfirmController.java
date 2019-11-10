@@ -9,7 +9,6 @@ import gg.gamello.user.core.infrastructure.exception.PasswordsDontMatchException
 import gg.gamello.user.core.infrastructure.exception.UserDoesNotExistsException;
 import gg.gamello.user.infrastructure.security.AuthenticationUser;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -24,53 +23,33 @@ public class UserConfirmController {
 	UserConfirmApplicationService applicationService;
 
 	@PostMapping("/confirm")
-	public ResponseEntity<Response> confirmUser(@RequestBody ConfirmCommand command) throws ConfirmationException, UserDoesNotExistsException {
+	public ResponseEntity<Void> confirmUser(@RequestBody ConfirmCommand command) throws ConfirmationException, UserDoesNotExistsException {
 		applicationService.activate(command);
-		return ResponseEntity
-				.ok(Response.builder()
-						.status(HttpStatus.OK.getReasonPhrase())
-						.code(HttpStatus.OK.value())
-						.build());
+		return ResponseEntity.ok().build();
 	}
 
 	@DeleteMapping("/confirm")
-	public ResponseEntity<Response> confirmUserDelete(@RequestBody ConfirmCommand command) throws ConfirmationException, UserDoesNotExistsException {
+	public ResponseEntity<Void> confirmUserDelete(@RequestBody ConfirmCommand command) throws ConfirmationException, UserDoesNotExistsException {
 		applicationService.activate(command);
-		return ResponseEntity
-				.ok(Response.builder()
-						.status(HttpStatus.OK.getReasonPhrase())
-						.code(HttpStatus.OK.value())
-						.build());
+		return ResponseEntity.ok().build();
 	}
 
 	@PostMapping("/confirm/email")
-	public ResponseEntity<Response> confirmEmail(@RequestBody ConfirmCommand command) throws ConfirmationException, UserDoesNotExistsException {
+	public ResponseEntity<Void> confirmEmail(@RequestBody ConfirmCommand command) throws ConfirmationException, UserDoesNotExistsException {
 		applicationService.changeEmail(command);
-		return ResponseEntity
-				.ok(Response.builder()
-						.status(HttpStatus.OK.getReasonPhrase())
-						.code(HttpStatus.OK.value())
-						.build());
+		return ResponseEntity.ok().build();
 	}
 
 	@PostMapping("/confirm/password")
-	public ResponseEntity<Response> confirmPassword(@RequestBody RecoverConfirmCommand command) throws ConfirmationException, UserDoesNotExistsException {
+	public ResponseEntity<Void> confirmPassword(@RequestBody RecoverConfirmCommand command) throws ConfirmationException, UserDoesNotExistsException {
 		applicationService.recover(command);
-		return ResponseEntity
-				.ok(Response.builder()
-						.status(HttpStatus.OK.getReasonPhrase())
-						.code(HttpStatus.OK.value())
-						.build());
+		return ResponseEntity.ok().build();
 	}
 
 	@PostMapping("/change/password")
-	public ResponseEntity<Response> passwordChange(@AuthenticationPrincipal AuthenticationUser user,
+	public ResponseEntity<Void> passwordChange(@AuthenticationPrincipal AuthenticationUser user,
 												   @RequestBody PasswordChangeCommand command) throws PasswordsDontMatchException {
 		applicationService.changePassword(user, command);
-		return ResponseEntity
-				.ok(Response.builder()
-						.status(HttpStatus.OK.getReasonPhrase())
-						.code(HttpStatus.OK.value())
-						.build());
+		return ResponseEntity.ok().build();
 	}
 }

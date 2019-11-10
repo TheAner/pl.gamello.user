@@ -1,11 +1,10 @@
 package gg.gamello.user.core.ui;
 
 import gg.gamello.user.core.application.UserApplicationService;
-import gg.gamello.user.core.application.command.EmailChangeRequestCommand;
 import gg.gamello.user.core.application.command.LanguageChangeCommand;
+import gg.gamello.user.core.application.dto.UserDto;
 import gg.gamello.user.infrastructure.security.AuthenticationUser;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,24 +19,15 @@ public class UserController {
 	UserApplicationService applicationService;
 
 	@GetMapping("/")
-	public ResponseEntity<Response> getLoggedUser(@AuthenticationPrincipal AuthenticationUser user) {
+	public ResponseEntity<UserDto> getLoggedUser(@AuthenticationPrincipal AuthenticationUser user) {
 		var userDto = applicationService.getLoggedUser(user);
-		return ResponseEntity
-				.ok(Response.builder()
-						.status(HttpStatus.OK.getReasonPhrase())
-						.code(HttpStatus.OK.value())
-						.body(userDto)
-						.build());
+		return ResponseEntity.ok(userDto);
 	}
 
 	@PostMapping("/change/language")
-	public ResponseEntity<Response> emailChangeRequest(@AuthenticationPrincipal AuthenticationUser user,
+	public ResponseEntity<Void> emailChangeRequest(@AuthenticationPrincipal AuthenticationUser user,
 													   @RequestBody LanguageChangeCommand command) {
 		applicationService.changeLanguage(user, command);
-		return ResponseEntity
-				.ok(Response.builder()
-						.status(HttpStatus.OK.getReasonPhrase())
-						.code(HttpStatus.OK.value())
-						.build());
+		return ResponseEntity.ok().build();
 	}
 }
