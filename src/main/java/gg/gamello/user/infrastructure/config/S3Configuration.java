@@ -30,7 +30,7 @@ public class S3Configuration {
 	}
 
 	@Bean
-	public TransferManager getTransferManager(){
+	public TransferManager getTransferManager() {
 		TransferManagerBuilder transferManagerBuilder = TransferManagerBuilder.standard();
 		transferManagerBuilder.setS3Client(awsS3Client());
 		return transferManagerBuilder.build();

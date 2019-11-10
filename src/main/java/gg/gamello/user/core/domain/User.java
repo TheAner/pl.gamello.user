@@ -24,7 +24,9 @@ import java.util.UUID;
 		name = "user",
 		uniqueConstraints = {@UniqueConstraint(columnNames = {"username", "email", "slug"})}
 )
-@NoArgsConstructor @Getter @Setter(AccessLevel.PACKAGE)
+@NoArgsConstructor
+@Getter
+@Setter(AccessLevel.PACKAGE)
 public class User extends AbstractAggregateRoot<User> {
 
 	@Id

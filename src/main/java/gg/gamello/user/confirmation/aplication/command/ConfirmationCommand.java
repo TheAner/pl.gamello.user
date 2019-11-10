@@ -14,7 +14,7 @@ public class ConfirmationCommand {
 
 	private String secret;
 
-	public static Builder builder(){
+	public static Builder builder() {
 		return new Builder();
 	}
 

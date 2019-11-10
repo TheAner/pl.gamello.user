@@ -38,7 +38,7 @@ public enum MethodType {
 		private ApplicationContext context;
 
 		@PostConstruct
-		public void construct(){
+		public void construct() {
 			Stream.of(MethodType.values())
 					.forEach(type -> {
 						type.factory = context.getBean(type.factoryClass);

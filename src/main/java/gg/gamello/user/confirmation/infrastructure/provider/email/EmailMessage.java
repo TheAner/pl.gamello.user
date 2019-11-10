@@ -30,7 +30,7 @@ class EmailMessage extends Message {
 		private String issuer = "";
 		private Map<String, String> data = new HashMap<>();
 
-		public Builder user(UUID userId, String name, String email){
+		public Builder user(UUID userId, String name, String email) {
 			this.userId = userId;
 			this.name = name;
 			this.email = email;

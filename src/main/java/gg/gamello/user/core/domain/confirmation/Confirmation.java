@@ -10,6 +10,8 @@ import java.util.Optional;
 
 public interface Confirmation {
 	void request(CreateCommand command);
+
 	void check(ConfirmationCommand command) throws IncorrectSecretException, ConfirmationDoesNotExistsException, OutdatedConfirmationException;
+
 	Optional<String> validate(ConfirmationCommand command) throws IncorrectSecretException, ConfirmationDoesNotExistsException, OutdatedConfirmationException;
 }

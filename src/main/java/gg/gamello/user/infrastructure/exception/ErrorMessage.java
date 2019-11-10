@@ -12,7 +12,8 @@ public class ErrorMessage {
 
 	private Map<String, String> details;
 
-	private ErrorMessage() { }
+	private ErrorMessage() {
+	}
 
 	public static Builder builder() {
 		return new Builder();
@@ -25,16 +26,16 @@ public class ErrorMessage {
 		private Map<String, String> details;
 
 		private Builder() {
-			error = new String();
+			error = "";
 			details = new HashMap<>();
 		}
 
-		public Builder error(String error){
+		public Builder error(String error) {
 			this.error = error;
 			return this;
 		}
 
-		public Builder addDetail(String field, String cause){
+		public Builder addDetail(String field, String cause) {
 			details.put(field, cause);
 			return this;
 		}
@@ -44,7 +45,7 @@ public class ErrorMessage {
 			return this;
 		}
 
-		public ErrorMessage build(){
+		public ErrorMessage build() {
 			ErrorMessage errorMessage = new ErrorMessage();
 			errorMessage.error = this.error;
 			errorMessage.details = this.details;

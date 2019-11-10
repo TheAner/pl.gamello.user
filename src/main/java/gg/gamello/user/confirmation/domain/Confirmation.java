@@ -22,7 +22,9 @@ import java.util.UUID;
 @Table(
 		name = "confirmation"
 )
-@NoArgsConstructor @Getter @Setter(AccessLevel.PACKAGE)
+@NoArgsConstructor
+@Getter
+@Setter(AccessLevel.PACKAGE)
 public class Confirmation extends AbstractAggregateRoot<Confirmation> {
 
 	@Id
@@ -46,7 +48,7 @@ public class Confirmation extends AbstractAggregateRoot<Confirmation> {
 	private String attachment;
 
 	public void check(String secret) throws OutdatedConfirmationException, IncorrectSecretException {
-		if (expiration.compareTo(new Date())<0)
+		if (expiration.compareTo(new Date()) < 0)
 			throw new OutdatedConfirmationException("Confirmation has expired");
 		if (!secret.equals(this.secret))
 			throw new IncorrectSecretException("Invalid secret");

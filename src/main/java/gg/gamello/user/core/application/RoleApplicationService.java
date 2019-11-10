@@ -14,7 +14,7 @@ public class RoleApplicationService {
 		this.roleRepository = roleRepository;
 	}
 
-	public Role getUser(){
+	public Role getUser() {
 		return roleRepository.findByRole(RoleType.USER);
 	}
 }

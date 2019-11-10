@@ -5,7 +5,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class RoleFactory {
 
-	public Role create(RoleType roleType){
+	public Role create(RoleType roleType) {
 		return new Role(roleType);
 	}
 }

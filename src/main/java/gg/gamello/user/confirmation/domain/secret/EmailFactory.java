@@ -20,7 +20,7 @@ public class EmailFactory implements SecretFactory {
 		for (int i = 0; i < emailProperties.getToken().getSections(); i++) {
 			token.append(RandomStringUtils.randomAlphanumeric(emailProperties.getToken().getChars()));
 
-			if (i != (emailProperties.getToken().getSections()-1)) {
+			if (i != (emailProperties.getToken().getSections() - 1)) {
 				token.append("-");
 			}
 		}

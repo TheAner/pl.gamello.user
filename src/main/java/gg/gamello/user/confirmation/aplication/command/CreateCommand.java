@@ -16,7 +16,7 @@ public class CreateCommand {
 
 	private String attachment;
 
-	public static Builder builder(){
+	public static Builder builder() {
 		return new Builder();
 	}
 
@@ -29,27 +29,27 @@ public class CreateCommand {
 
 		private String attachment;
 
-		public Builder user(UserDto user){
+		public Builder user(UserDto user) {
 			this.user = user;
 			return this;
 		}
 
-		public Builder action(ActionType action){
+		public Builder action(ActionType action) {
 			this.action = action;
 			return this;
 		}
 
-		public Builder method(MethodType method){
+		public Builder method(MethodType method) {
 			this.method = method;
 			return this;
 		}
 
-		public Builder attachment(String attachment){
+		public Builder attachment(String attachment) {
 			this.attachment = attachment;
 			return this;
 		}
 
-		public CreateCommand build(){
+		public CreateCommand build() {
 			if (user == null)
 				throw new IllegalStateException("user can not be null");
 			if (action == null)

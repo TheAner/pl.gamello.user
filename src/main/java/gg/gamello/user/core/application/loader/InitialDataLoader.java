@@ -31,7 +31,7 @@ public class InitialDataLoader implements ApplicationListener<ContextRefreshedEv
 
 	@Transactional
 	void createRoleIfNotFound(RoleType roleType) {
-		if(!roleRepository.existsByRole(roleType))
+		if (!roleRepository.existsByRole(roleType))
 			roleRepository.save(roleFactory.create(roleType));
 	}
 }
