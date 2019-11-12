@@ -25,7 +25,7 @@ public class UserAdvisor {
 
 	@ResponseBody
 	@ExceptionHandler(UserAlreadyExistsException.class)
-	@ResponseStatus(HttpStatus.BAD_REQUEST)
+	@ResponseStatus(HttpStatus.CONFLICT)
 	ErrorMessage accountAlreadyExistsHandler(UserAlreadyExistsException ex) {
 		return ErrorMessage.builder()
 				.error(ex.getMessage())
