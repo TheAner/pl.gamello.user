@@ -18,8 +18,7 @@ public class RegisterCommand {
 	String email;
 
 	@NotEmpty(message = "Password can not be empty")
-	@Size(min = 8, max = 64, message = "Password must be between {min} and {max} characters long")
-	@PasswordPolicy()
+	@PasswordPolicy
 	String password;
 
 	@NotEmpty(message = "Language can not be empty")
