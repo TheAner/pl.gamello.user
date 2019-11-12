@@ -15,6 +15,6 @@ public class RoleApplicationService {
 	}
 
 	public Role getUser() {
-		return roleRepository.findByRole(RoleType.USER);
+		return roleRepository.findByRole(RoleType.getDefault());
 	}
 }

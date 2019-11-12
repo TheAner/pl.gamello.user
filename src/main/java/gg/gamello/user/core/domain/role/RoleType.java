@@ -1,8 +1,12 @@
 package gg.gamello.user.core.domain.role;
 
 public enum RoleType {
-	USER(0),
-	ADMIN(1);
+	ROLE_USER(0),
+	ROLE_ADMIN(1);
+
+	public static RoleType getDefault() {
+		return ROLE_USER;
+	}
 
 	RoleType(Integer privilegeLevel) {
 	}
