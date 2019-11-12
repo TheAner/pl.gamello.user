@@ -2,12 +2,12 @@ package gg.gamello.user.core.application;
 
 import gg.gamello.user.confirmation.aplication.command.ConfirmationCommand;
 import gg.gamello.user.confirmation.domain.action.ActionType;
+import gg.gamello.user.confirmation.infrastructure.exception.ConfirmationDoesNotExistsException;
 import gg.gamello.user.confirmation.infrastructure.exception.ConfirmationException;
+import gg.gamello.user.confirmation.infrastructure.exception.IncorrectSecretException;
+import gg.gamello.user.confirmation.infrastructure.exception.OutdatedConfirmationException;
 import gg.gamello.user.confirmation.infrastructure.provider.email.EmailProvider;
-import gg.gamello.user.core.application.command.ConfirmCommand;
-import gg.gamello.user.core.application.command.CredentialsCommand;
-import gg.gamello.user.core.application.command.PasswordChangeCommand;
-import gg.gamello.user.core.application.command.RecoverConfirmCommand;
+import gg.gamello.user.core.application.command.*;
 import gg.gamello.user.core.application.dto.UserDto;
 import gg.gamello.user.core.application.dto.UserDtoAssembler;
 import gg.gamello.user.core.domain.User;
@@ -128,7 +128,18 @@ public class UserConfirmApplicationService {
 		userRepository.save(user);
 	}
 
-	public UserDto authenticateCredentials(CredentialsCommand command) throws UserDoesNotExistsException, UserIsNotActiveException, PasswordsDontMatchException {
+	public void checkSecret(CheckSecretCommand command)
+			throws IncorrectSecretException, ConfirmationDoesNotExistsException, OutdatedConfirmationException {
+		var confirmationCommand = ConfirmationCommand.builder()
+				.userId(command.getUserId())
+				.secret(command.getSecret())
+				.action(ActionType.valueOf(command.getAction()))
+				.build();
+
+		confirmation.check(confirmationCommand);
+	}
+
+	public UserDto authenticateCredentials(CredentialsCommand command) throws UserDoesNotExistsException, UserIsNotActiveException {
 		User user = userRepository.findByCredentials(command.getLogin())
 				.orElseThrow(() -> new UserDoesNotExistsException(command.getLogin(), "User does not exists"));
 

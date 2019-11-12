@@ -43,7 +43,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 				.authorizeRequests()
 				.antMatchers(HttpMethod.POST, "/")
 				.permitAll()
-				.antMatchers("/confirm/**", "/recover", "/api/**")
+				.antMatchers("/confirm/**", "/recover", "/check", "/api/**")
 				.permitAll()
 				.anyRequest()
 				.authenticated();
@@ -65,7 +65,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 	public void configure(WebSecurity web) {
 		web.ignoring()
 				.antMatchers(HttpMethod.POST, "/")
-				.antMatchers("/confirm/**", "/recover", "/api/**")
+				.antMatchers("/confirm/**", "/recover", "/check", "/api/**")
 				.antMatchers("/error");
 	}
 

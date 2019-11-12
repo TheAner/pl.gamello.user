@@ -1,11 +1,11 @@
 package gg.gamello.user.core.ui;
 
+import gg.gamello.user.confirmation.infrastructure.exception.ConfirmationDoesNotExistsException;
 import gg.gamello.user.confirmation.infrastructure.exception.ConfirmationException;
+import gg.gamello.user.confirmation.infrastructure.exception.IncorrectSecretException;
+import gg.gamello.user.confirmation.infrastructure.exception.OutdatedConfirmationException;
 import gg.gamello.user.core.application.UserConfirmApplicationService;
-import gg.gamello.user.core.application.command.ConfirmCommand;
-import gg.gamello.user.core.application.command.CredentialsCommand;
-import gg.gamello.user.core.application.command.PasswordChangeCommand;
-import gg.gamello.user.core.application.command.RecoverConfirmCommand;
+import gg.gamello.user.core.application.command.*;
 import gg.gamello.user.core.application.dto.UserDto;
 import gg.gamello.user.core.infrastructure.exception.PasswordsDontMatchException;
 import gg.gamello.user.core.infrastructure.exception.UserDoesNotExistsException;
@@ -60,6 +60,13 @@ public class UserConfirmController {
 											   @Valid @RequestBody PasswordChangeCommand command)
 			throws PasswordsDontMatchException {
 		applicationService.changePassword(user, command);
+		return ResponseEntity.ok().build();
+	}
+
+	@PostMapping("/check")
+	public ResponseEntity<Void> checkSecret(@Valid @RequestBody CheckSecretCommand command)
+			throws IncorrectSecretException, ConfirmationDoesNotExistsException, OutdatedConfirmationException {
+		applicationService.checkSecret(command);
 		return ResponseEntity.ok().build();
 	}
 
