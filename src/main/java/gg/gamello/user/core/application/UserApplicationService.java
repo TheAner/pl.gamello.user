@@ -11,11 +11,9 @@ import gg.gamello.user.core.domain.User;
 import gg.gamello.user.core.domain.UserRepository;
 import gg.gamello.user.core.infrastructure.exception.UserAlreadyExistsException;
 import gg.gamello.user.core.infrastructure.exception.UserDoesNotExistsException;
-import gg.gamello.user.infrastructure.security.AuthenticationUser;
+import gg.gamello.user.infrastructure.security.AuthenticationContainer;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.io.IOException;
 
 @Service
 public class UserApplicationService {
@@ -28,22 +26,22 @@ public class UserApplicationService {
 		this.avatarService = avatarService;
 	}
 
-	public UserDto getLoggedUser(AuthenticationUser user) {
-		return UserDtoAssembler.convertDefault(find(user));
+	public UserDto getLoggedUser(AuthenticationContainer container) {
+		return UserDtoAssembler.convertDefault(find(container));
 	}
 
 	public UserDto getUserBySlug(String slug) throws UserDoesNotExistsException {
 		return UserDtoAssembler.convertDefault(find(slug));
 	}
 
-	public void changeLanguage(AuthenticationUser authenticationUser, LanguageChangeCommand command) {
-		User user = find(authenticationUser);
+	public void changeLanguage(AuthenticationContainer container, LanguageChangeCommand command) {
+		User user = find(container);
 		user.changeLanguage(command.getLanguage());
 		userRepository.save(user);
 	}
 
-	public void changeSlug(AuthenticationUser authenticationUser, SlugChangeCommand command) throws UserAlreadyExistsException {
-		User user = find(authenticationUser);
+	public void changeSlug(AuthenticationContainer container, SlugChangeCommand command) throws UserAlreadyExistsException {
+		User user = find(container);
 		if (userRepository.existsBySlug(command.getSlug())) {
 			throw new UserAlreadyExistsException("User with slug " +
 					command.getSlug() + " already exists");
@@ -52,14 +50,14 @@ public class UserApplicationService {
 		userRepository.save(user);
 	}
 
-	public void changeVisibleName(AuthenticationUser authenticationUser, VisibleNameChangeCommand command) {
-		User user = find(authenticationUser);
+	public void changeVisibleName(AuthenticationContainer container, VisibleNameChangeCommand command) {
+		User user = find(container);
 		user.changeVisibleName(command.getVisibleName());
 		userRepository.save(user);
 	}
 
-	public void changeAvatar(AuthenticationUser authenticationUser, MultipartFile image) throws AvatarException, InterruptedException {
-		User user = find(authenticationUser);
+	public void changeAvatar(AuthenticationContainer container, MultipartFile image) throws AvatarException, InterruptedException {
+		User user = find(container);
 
 		var avatars = avatarService.generateAvatars(image);
 		var location = avatarService.uploadListOfAvatars(avatars, user.getUsername());
@@ -74,8 +72,8 @@ public class UserApplicationService {
 				.orElseThrow(() -> new UserDoesNotExistsException(slug, "User does not exists"));
 	}
 
-	private User find(AuthenticationUser user) {
-		return userRepository.findById(user.getId())
+	private User find(AuthenticationContainer container) {
+		return userRepository.findById(container.getUser().getId())
 				.orElseThrow(() -> new IllegalStateException("User from authentication does not exists"));
 	}
 }

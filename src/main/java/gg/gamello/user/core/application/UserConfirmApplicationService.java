@@ -16,7 +16,7 @@ import gg.gamello.user.core.domain.confirmation.Confirmation;
 import gg.gamello.user.core.infrastructure.exception.PasswordsDontMatchException;
 import gg.gamello.user.core.infrastructure.exception.UserDoesNotExistsException;
 import gg.gamello.user.core.infrastructure.exception.UserIsNotActiveException;
-import gg.gamello.user.infrastructure.security.AuthenticationUser;
+import gg.gamello.user.infrastructure.security.AuthenticationContainer;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -88,8 +88,8 @@ public class UserConfirmApplicationService {
 	}
 
 	@Transactional
-	public void changePassword(AuthenticationUser authenticationUser, PasswordChangeCommand command) throws PasswordsDontMatchException {
-		User user = find(authenticationUser);
+	public void changePassword(AuthenticationContainer container, PasswordChangeCommand command) throws PasswordsDontMatchException {
+		User user = find(container);
 		user.matchPassword(command.getOldPassword(), command.getNewPassword(), encoder);
 
 		var message = emailProvider.messageBuilder()
@@ -156,8 +156,8 @@ public class UserConfirmApplicationService {
 				.orElseThrow(() -> new UserDoesNotExistsException(userId.toString(), "User does not exists"));
 	}
 
-	private User find(AuthenticationUser user) {
-		return userRepository.findById(user.getId())
+	private User find(AuthenticationContainer container) {
+		return userRepository.findById(container.getUser().getId())
 				.orElseThrow(() -> new IllegalStateException("User from authentication does not exists"));
 	}
 }

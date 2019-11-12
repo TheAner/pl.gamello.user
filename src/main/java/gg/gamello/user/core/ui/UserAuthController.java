@@ -1,11 +1,12 @@
 package gg.gamello.user.core.ui;
 
+import gg.gamello.dev.authentication.model.User;
 import gg.gamello.user.core.application.UserRequestApplicationService;
 import gg.gamello.user.core.application.command.EmailChangeRequestCommand;
 import gg.gamello.user.core.application.command.RecoverRequestCommand;
 import gg.gamello.user.core.application.command.RegisterCommand;
 import gg.gamello.user.core.infrastructure.exception.UserAlreadyExistsException;
-import gg.gamello.user.infrastructure.security.AuthenticationUser;
+import gg.gamello.user.infrastructure.security.AuthenticationContainer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -31,15 +32,15 @@ public class UserAuthController {
 	}
 
 	@DeleteMapping("/")
-	public ResponseEntity<Void> deleteRequest(@AuthenticationPrincipal AuthenticationUser user) {
-		applicationService.createDeleteRequest(user);
+	public ResponseEntity<Void> deleteRequest(@AuthenticationPrincipal User user) {
+		applicationService.createDeleteRequest(AuthenticationContainer.contain(user));
 		return ResponseEntity.ok().build();
 	}
 
 	@PostMapping("/change/email")
-	public ResponseEntity<Void> emailChangeRequest(@AuthenticationPrincipal AuthenticationUser user,
+	public ResponseEntity<Void> emailChangeRequest(@AuthenticationPrincipal User user,
 												   @Valid @RequestBody EmailChangeRequestCommand command) {
-		applicationService.createEmailChangeRequest(user, command);
+		applicationService.createEmailChangeRequest(AuthenticationContainer.contain(user), command);
 		return ResponseEntity.ok().build();
 	}
 

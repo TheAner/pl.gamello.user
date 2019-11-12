@@ -14,7 +14,7 @@ import gg.gamello.user.core.domain.confirmation.Confirmation;
 import gg.gamello.user.core.infrastructure.exception.UserAlreadyExistsException;
 import gg.gamello.user.core.infrastructure.exception.UserDoesNotExistsException;
 import gg.gamello.user.core.infrastructure.exception.UserIsNotActiveException;
-import gg.gamello.user.infrastructure.security.AuthenticationUser;
+import gg.gamello.user.infrastructure.security.AuthenticationContainer;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -53,8 +53,8 @@ public class UserRequestApplicationService {
 		return userRepository.save(user).getId();
 	}
 
-	public void createDeleteRequest(AuthenticationUser authenticationUser) {
-		User user = findUser(authenticationUser);
+	public void createDeleteRequest(AuthenticationContainer container) {
+		User user = findUser(container);
 		var confirmationRequest = CreateCommand.builder()
 				.user(UserDtoAssembler.convertDefault(user))
 				.action(ActionType.DELETE)
@@ -81,8 +81,8 @@ public class UserRequestApplicationService {
 		}
 	}
 
-	public void createEmailChangeRequest(AuthenticationUser authenticationUser, EmailChangeRequestCommand command) {
-		User user = findUser(authenticationUser);
+	public void createEmailChangeRequest(AuthenticationContainer container, EmailChangeRequestCommand command) {
+		User user = findUser(container);
 		var confirmationRequest = CreateCommand.builder()
 				.user(UserDtoAssembler.convertDefault(user))
 				.action(ActionType.EMAIL)
@@ -98,8 +98,8 @@ public class UserRequestApplicationService {
 				.orElseThrow(() -> new UserDoesNotExistsException(email, "User does not exists"));
 	}
 
-	private User findUser(AuthenticationUser user) {
-		return userRepository.findById(user.getId())
+	private User findUser(AuthenticationContainer container) {
+		return userRepository.findById(container.getUser().getId())
 				.orElseThrow(() -> new IllegalStateException("User from authentication does not exists"));
 	}
 }
