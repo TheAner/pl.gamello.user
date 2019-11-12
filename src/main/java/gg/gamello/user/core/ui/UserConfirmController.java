@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.Valid;
+
 @RestController
 public class UserConfirmController {
 
@@ -23,32 +25,37 @@ public class UserConfirmController {
 	UserConfirmApplicationService applicationService;
 
 	@PostMapping("/confirm")
-	public ResponseEntity<Void> confirmUser(@RequestBody ConfirmCommand command) throws ConfirmationException, UserDoesNotExistsException {
+	public ResponseEntity<Void> confirmUser(@Valid @RequestBody ConfirmCommand command)
+			throws ConfirmationException, UserDoesNotExistsException {
 		applicationService.activate(command);
 		return ResponseEntity.ok().build();
 	}
 
 	@DeleteMapping("/confirm")
-	public ResponseEntity<Void> confirmUserDelete(@RequestBody ConfirmCommand command) throws ConfirmationException, UserDoesNotExistsException {
+	public ResponseEntity<Void> confirmUserDelete(@Valid @RequestBody ConfirmCommand command)
+			throws ConfirmationException, UserDoesNotExistsException {
 		applicationService.activate(command);
 		return ResponseEntity.ok().build();
 	}
 
 	@PostMapping("/confirm/email")
-	public ResponseEntity<Void> confirmEmail(@RequestBody ConfirmCommand command) throws ConfirmationException, UserDoesNotExistsException {
+	public ResponseEntity<Void> confirmEmail(@Valid @RequestBody ConfirmCommand command)
+			throws ConfirmationException, UserDoesNotExistsException {
 		applicationService.changeEmail(command);
 		return ResponseEntity.ok().build();
 	}
 
 	@PostMapping("/confirm/password")
-	public ResponseEntity<Void> confirmPassword(@RequestBody RecoverConfirmCommand command) throws ConfirmationException, UserDoesNotExistsException {
+	public ResponseEntity<Void> confirmPassword(@Valid @RequestBody RecoverConfirmCommand command)
+			throws ConfirmationException, UserDoesNotExistsException {
 		applicationService.recover(command);
 		return ResponseEntity.ok().build();
 	}
 
 	@PostMapping("/change/password")
 	public ResponseEntity<Void> passwordChange(@AuthenticationPrincipal AuthenticationUser user,
-												   @RequestBody PasswordChangeCommand command) throws PasswordsDontMatchException {
+											   @Valid @RequestBody PasswordChangeCommand command)
+			throws PasswordsDontMatchException {
 		applicationService.changePassword(user, command);
 		return ResponseEntity.ok().build();
 	}

@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.Valid;
 import java.net.URI;
 
 @RestController
@@ -23,7 +24,8 @@ public class UserAuthController {
 	UserRequestApplicationService applicationService;
 
 	@PostMapping("/")
-	public ResponseEntity<Void> register(@RequestBody RegisterCommand command) throws UserAlreadyExistsException {
+	public ResponseEntity<Void> register(@Valid @RequestBody RegisterCommand command)
+			throws UserAlreadyExistsException {
 		var userId = applicationService.create(command);
 		return ResponseEntity.created(URI.create("user/" + userId)).build();
 	}
@@ -36,13 +38,13 @@ public class UserAuthController {
 
 	@PostMapping("/change/email")
 	public ResponseEntity<Void> emailChangeRequest(@AuthenticationPrincipal AuthenticationUser user,
-													   @RequestBody EmailChangeRequestCommand command) {
+												   @Valid @RequestBody EmailChangeRequestCommand command) {
 		applicationService.createEmailChangeRequest(user, command);
 		return ResponseEntity.ok().build();
 	}
 
 	@PostMapping("/recover")
-	public ResponseEntity<Void> recoverRequest(@RequestBody RecoverRequestCommand command) {
+	public ResponseEntity<Void> recoverRequest(@Valid @RequestBody RecoverRequestCommand command) {
 		applicationService.createRecoverRequest(command);
 		return ResponseEntity.ok().build();
 	}

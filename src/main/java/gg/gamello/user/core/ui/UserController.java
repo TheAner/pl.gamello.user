@@ -15,6 +15,8 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.validation.Valid;
+
 @RestController
 public class UserController {
 
@@ -42,21 +44,23 @@ public class UserController {
 
 	@PostMapping("/change/slug")
 	public ResponseEntity<Void> slugChange(@AuthenticationPrincipal AuthenticationUser user,
-												   @RequestBody SlugChangeCommand command) throws UserAlreadyExistsException {
+										   @Valid @RequestBody SlugChangeCommand command)
+			throws UserAlreadyExistsException {
 		applicationService.changeSlug(user, command);
 		return ResponseEntity.ok().build();
 	}
 
 	@PostMapping("/change/name")
 	public ResponseEntity<Void> visibleNameChange(@AuthenticationPrincipal AuthenticationUser user,
-										   @RequestBody VisibleNameChangeCommand command) {
+												  @Valid @RequestBody VisibleNameChangeCommand command) {
 		applicationService.changeVisibleName(user, command);
 		return ResponseEntity.ok().build();
 	}
 
 	@PostMapping("/change/avatar")
 	public ResponseEntity<Void> avatarChange(@AuthenticationPrincipal AuthenticationUser user,
-											 @RequestParam("file") MultipartFile image) throws AvatarException, InterruptedException {
+											 @RequestParam("file") MultipartFile image)
+			throws AvatarException, InterruptedException {
 		applicationService.changeAvatar(user, image);
 		return ResponseEntity.ok().build();
 	}
