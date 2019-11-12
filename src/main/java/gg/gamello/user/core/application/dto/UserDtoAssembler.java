@@ -17,4 +17,10 @@ public class UserDtoAssembler {
 		userDto.setLanguage(user.getLanguage());
 		return userDto;
 	}
+
+	public static UserDto convertWithRoles(User user) {
+		UserDto userDto = convertDefault(user);
+		userDto.setRoles(user.getRoles());
+		return userDto;
+	}
 }

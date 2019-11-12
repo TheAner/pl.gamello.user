@@ -12,8 +12,8 @@ import org.springframework.data.domain.AbstractAggregateRoot;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import javax.persistence.*;
-import java.util.Collection;
 import java.util.Date;
+import java.util.Set;
 import java.util.UUID;
 
 /**
@@ -57,7 +57,7 @@ public class User extends AbstractAggregateRoot<User> {
 	@JoinTable(name = "user_role",
 			joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
 			inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"))
-	private Collection<Role> roles;
+	private Set<Role> roles;
 
 	public void activate() {
 		this.setActive(true);

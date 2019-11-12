@@ -3,10 +3,13 @@ package gg.gamello.user.core.ui;
 import gg.gamello.user.confirmation.infrastructure.exception.ConfirmationException;
 import gg.gamello.user.core.application.UserConfirmApplicationService;
 import gg.gamello.user.core.application.command.ConfirmCommand;
+import gg.gamello.user.core.application.command.CredentialsCommand;
 import gg.gamello.user.core.application.command.PasswordChangeCommand;
 import gg.gamello.user.core.application.command.RecoverConfirmCommand;
+import gg.gamello.user.core.application.dto.UserDto;
 import gg.gamello.user.core.infrastructure.exception.PasswordsDontMatchException;
 import gg.gamello.user.core.infrastructure.exception.UserDoesNotExistsException;
+import gg.gamello.user.core.infrastructure.exception.UserIsNotActiveException;
 import gg.gamello.user.infrastructure.security.AuthenticationUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -58,5 +61,11 @@ public class UserConfirmController {
 			throws PasswordsDontMatchException {
 		applicationService.changePassword(user, command);
 		return ResponseEntity.ok().build();
+	}
+
+	@PostMapping("/api/authenticate")
+	public UserDto authenticateCredentials(@RequestBody CredentialsCommand command)
+			throws UserDoesNotExistsException, PasswordsDontMatchException, UserIsNotActiveException {
+		return applicationService.authenticateCredentials(command);
 	}
 }

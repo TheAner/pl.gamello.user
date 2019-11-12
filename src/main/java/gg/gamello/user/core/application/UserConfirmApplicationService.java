@@ -5,13 +5,17 @@ import gg.gamello.user.confirmation.domain.action.ActionType;
 import gg.gamello.user.confirmation.infrastructure.exception.ConfirmationException;
 import gg.gamello.user.confirmation.infrastructure.provider.email.EmailProvider;
 import gg.gamello.user.core.application.command.ConfirmCommand;
+import gg.gamello.user.core.application.command.CredentialsCommand;
 import gg.gamello.user.core.application.command.PasswordChangeCommand;
 import gg.gamello.user.core.application.command.RecoverConfirmCommand;
+import gg.gamello.user.core.application.dto.UserDto;
+import gg.gamello.user.core.application.dto.UserDtoAssembler;
 import gg.gamello.user.core.domain.User;
 import gg.gamello.user.core.domain.UserRepository;
 import gg.gamello.user.core.domain.confirmation.Confirmation;
 import gg.gamello.user.core.infrastructure.exception.PasswordsDontMatchException;
 import gg.gamello.user.core.infrastructure.exception.UserDoesNotExistsException;
+import gg.gamello.user.core.infrastructure.exception.UserIsNotActiveException;
 import gg.gamello.user.infrastructure.security.AuthenticationUser;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -122,6 +126,18 @@ public class UserConfirmApplicationService {
 
 		user.changeEmail(newEmail);
 		userRepository.save(user);
+	}
+
+	public UserDto authenticateCredentials(CredentialsCommand command) throws UserDoesNotExistsException, UserIsNotActiveException, PasswordsDontMatchException {
+		User user = userRepository.findByCredentials(command.getLogin())
+				.orElseThrow(() -> new UserDoesNotExistsException(command.getLogin(), "User does not exists"));
+
+		user.checkActive();
+
+		if (!encoder.matches(command.getPassword(), user.getPassword()))
+			throw new UserDoesNotExistsException(command.getLogin(), "User does not exists");
+
+		return UserDtoAssembler.convertWithRoles(user);
 	}
 
 	private User find(UUID userId) throws UserDoesNotExistsException {
