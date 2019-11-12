@@ -72,7 +72,7 @@ public class UserConfirmController {
 
 	@PostMapping("/api/authenticate")
 	public UserDto authenticateCredentials(@RequestBody CredentialsCommand command)
-			throws UserDoesNotExistsException, PasswordsDontMatchException, UserIsNotActiveException {
+			throws UserDoesNotExistsException, UserIsNotActiveException {
 		return applicationService.authenticateCredentials(command);
 	}
 }

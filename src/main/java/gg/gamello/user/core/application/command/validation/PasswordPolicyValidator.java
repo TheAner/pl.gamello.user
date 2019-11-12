@@ -16,7 +16,7 @@ public class PasswordPolicyValidator implements ConstraintValidator<PasswordPoli
 
 	@Override
 	public boolean isValid(String password, ConstraintValidatorContext context) {
-		if (password.matches(regexp))
+		if (password != null && password.matches(regexp))
 			return true;
 		context.disableDefaultConstraintViolation();
 		context.buildConstraintViolationWithTemplate(message).addConstraintViolation();
