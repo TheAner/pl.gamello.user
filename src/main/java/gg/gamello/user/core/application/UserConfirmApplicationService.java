@@ -121,6 +121,7 @@ public class UserConfirmApplicationService {
 				.language(user.getLanguage())
 				.withIssuer(httpRequest.getRemoteUser())
 				.useTemplateChanged(ActionType.EMAIL)
+				.addData("newEmail", newEmail)
 				.build();
 		emailProvider.send(message);
 
