@@ -21,7 +21,7 @@ aws:
         s3: eu-central-1
 confirmation:
     email:
-        service-url: "http://email/api/transactional/single"
+        service-url: "http://mailer/transactional"
         enabled: false
 avatar:
     bucket-name: gamello-upload
