@@ -38,7 +38,7 @@ public class UserConfirmController {
 	@DeleteMapping("/confirm")
 	public ResponseEntity<Void> confirmUserDelete(@Valid @RequestBody ConfirmCommand command)
 			throws ConfirmationException, UserDoesNotExistsException {
-		applicationService.activate(command);
+		applicationService.delete(command);
 		return ResponseEntity.ok().build();
 	}
 
