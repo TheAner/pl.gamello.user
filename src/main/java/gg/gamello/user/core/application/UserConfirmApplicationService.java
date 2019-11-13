@@ -90,7 +90,7 @@ public class UserConfirmApplicationService {
 	@Transactional
 	public void changePassword(AuthenticationContainer container, PasswordChangeCommand command) throws PasswordsDontMatchException {
 		User user = find(container);
-		user.matchPassword(command.getOldPassword(), command.getNewPassword(), encoder);
+		user.matchPassword(command.getOldPassword(), encoder);
 
 		var message = emailProvider.messageBuilder()
 				.user(user.getId(), user.getUsername(), user.getEmail())

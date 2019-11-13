@@ -72,8 +72,8 @@ public class User extends AbstractAggregateRoot<User> {
 		this.setPassword(encoder.encode(password));
 	}
 
-	public void matchPassword(String oldPassword, String newPassword, PasswordEncoder encoder) throws PasswordsDontMatchException {
-		if (!encoder.matches(oldPassword, newPassword))
+	public void matchPassword(String password, PasswordEncoder encoder) throws PasswordsDontMatchException {
+		if (!encoder.matches(password, this.password))
 			throw new PasswordsDontMatchException("Passwords don't match");
 	}
 
