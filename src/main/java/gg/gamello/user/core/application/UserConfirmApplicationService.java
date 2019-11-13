@@ -95,7 +95,7 @@ public class UserConfirmApplicationService {
 		var message = emailProvider.messageBuilder()
 				.user(user.getId(), user.getUsername(), user.getEmail())
 				.language(user.getLanguage())
-				.issuer(httpRequest.getRemoteUser())
+				.withIssuer(httpRequest.getRemoteUser())
 				.useTemplateChanged(ActionType.PASSWORD)
 				.build();
 		emailProvider.send(message);
@@ -119,7 +119,7 @@ public class UserConfirmApplicationService {
 		var message = emailProvider.messageBuilder()
 				.user(user.getId(), user.getUsername(), user.getEmail())
 				.language(user.getLanguage())
-				.issuer(httpRequest.getRemoteUser())
+				.withIssuer(httpRequest.getRemoteUser())
 				.useTemplateChanged(ActionType.EMAIL)
 				.build();
 		emailProvider.send(message);

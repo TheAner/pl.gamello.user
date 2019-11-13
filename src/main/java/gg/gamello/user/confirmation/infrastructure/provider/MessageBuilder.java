@@ -7,7 +7,7 @@ public interface MessageBuilder<T extends Message> {
 
 	<K extends MessageBuilder> K secret(String secret);
 
-	<K extends MessageBuilder> K issuer(String issuer);
+	<K extends MessageBuilder> K withIssuer(String issuer);
 
 	T build();
 }

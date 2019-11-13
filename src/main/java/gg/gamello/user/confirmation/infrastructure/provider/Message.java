@@ -5,7 +5,6 @@ import java.util.UUID;
 
 public abstract class Message {
 	private UUID userId;
-	private String issuer;
 	private String language;
 	private Map<String, String> data;
 }

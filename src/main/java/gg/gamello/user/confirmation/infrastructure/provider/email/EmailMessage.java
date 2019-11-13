@@ -5,12 +5,14 @@ import gg.gamello.user.confirmation.domain.action.ActionType;
 import gg.gamello.user.confirmation.infrastructure.provider.Message;
 import gg.gamello.user.confirmation.infrastructure.provider.MessageBuilder;
 import gg.gamello.user.core.domain.language.Language;
+import lombok.Getter;
 import lombok.ToString;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+@Getter
 @ToString
 class EmailMessage extends Message {
 	private UUID userId;
@@ -18,7 +20,6 @@ class EmailMessage extends Message {
 	private String email;
 	private String template;
 	private String language;
-	private String issuer;
 	private Map<String, String> data;
 
 	public static class Builder implements MessageBuilder<EmailMessage> {
@@ -27,7 +28,6 @@ class EmailMessage extends Message {
 		private String email;
 		private String template;
 		private String language;
-		private String issuer = "";
 		private Map<String, String> data = new HashMap<>();
 
 		public Builder user(UUID userId, String name, String email) {
@@ -54,8 +54,8 @@ class EmailMessage extends Message {
 		}
 
 		@Override
-		public Builder issuer(String issuer) {
-			this.issuer = issuer;
+		public Builder withIssuer(String issuer) {
+			this.addData("issuer", issuer);
 			return this;
 		}
 
@@ -95,7 +95,6 @@ class EmailMessage extends Message {
 			message.email = email;
 			message.template = template;
 			message.language = language;
-			message.issuer = issuer;
 			message.data = data;
 			return message;
 		}
