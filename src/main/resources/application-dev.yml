@@ -1,2 +1,29 @@
 # Gamello Development User Microservice Configuration
 # intended use: running on Gamello main development cluster
+spring:
+    datasource:
+        url: jdbc:mysql://general.ck1oeylufjs2.eu-central-1.rds.amazonaws.com::3306/gamello_user
+        username: s_user
+        password: ftTAwQnA8SupEB4gY87fLyvUHxU4kNtJ
+    jpa:
+        hibernate:
+            ddl-auto: update
+    redis:
+        host: general.fyeghj.ng.0001.euc1.cache.amazonaws.com
+        port: 6379
+eureka:
+    client:
+        service-url:
+            defaultZone: http://eureka.gamello-dev:8761/eureka/
+aws:
+    access: AKIARYQQ3CL4AK5IW57G
+    secret: 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
+    regions:
+        s3: eu-central-1
+confirmation:
+    email:
+        service-url: "http://mailer/transactional"
+avatar:
+    bucket-name: gamello-upload
+    avatars-location: test/images/avatars/
+    default-avatar-location: app/images/default_avatar/default_avatar
