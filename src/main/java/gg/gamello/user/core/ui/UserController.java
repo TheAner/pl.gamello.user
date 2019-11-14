@@ -7,6 +7,7 @@ import gg.gamello.user.core.application.command.LanguageChangeCommand;
 import gg.gamello.user.core.application.command.SlugChangeCommand;
 import gg.gamello.user.core.application.command.VisibleNameChangeCommand;
 import gg.gamello.user.core.application.dto.UserDto;
+import gg.gamello.user.core.infrastructure.exception.PropertyConflictException;
 import gg.gamello.user.core.infrastructure.exception.UserAlreadyExistsException;
 import gg.gamello.user.core.infrastructure.exception.UserDoesNotExistsException;
 import gg.gamello.user.infrastructure.security.AuthenticationContainer;
@@ -46,14 +47,15 @@ public class UserController {
 	@PostMapping("/change/slug")
 	public ResponseEntity<Void> slugChange(@AuthenticationPrincipal User user,
 										   @Valid @RequestBody SlugChangeCommand command)
-			throws UserAlreadyExistsException {
+			throws PropertyConflictException {
 		applicationService.changeSlug(AuthenticationContainer.contain(user), command);
 		return ResponseEntity.ok().build();
 	}
 
 	@PostMapping("/change/name")
 	public ResponseEntity<Void> visibleNameChange(@AuthenticationPrincipal User user,
-												  @Valid @RequestBody VisibleNameChangeCommand command) {
+												  @Valid @RequestBody VisibleNameChangeCommand command)
+			throws PropertyConflictException {
 		applicationService.changeVisibleName(AuthenticationContainer.contain(user), command);
 		return ResponseEntity.ok().build();
 	}

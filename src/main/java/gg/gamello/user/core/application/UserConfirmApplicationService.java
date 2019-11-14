@@ -14,6 +14,7 @@ import gg.gamello.user.core.domain.User;
 import gg.gamello.user.core.domain.UserRepository;
 import gg.gamello.user.core.domain.confirmation.Confirmation;
 import gg.gamello.user.core.infrastructure.exception.PasswordsDontMatchException;
+import gg.gamello.user.core.infrastructure.exception.PropertyConflictException;
 import gg.gamello.user.core.infrastructure.exception.UserDoesNotExistsException;
 import gg.gamello.user.core.infrastructure.exception.UserIsNotActiveException;
 import gg.gamello.user.infrastructure.security.AuthenticationContainer;
@@ -88,8 +89,11 @@ public class UserConfirmApplicationService {
 	}
 
 	@Transactional
-	public void changePassword(AuthenticationContainer container, PasswordChangeCommand command) throws PasswordsDontMatchException {
+	public void changePassword(AuthenticationContainer container, PasswordChangeCommand command) throws PasswordsDontMatchException, PropertyConflictException {
 		User user = find(container);
+		if (command.getOldPassword().equals(command.getNewPassword()))
+			throw new PropertyConflictException("passwordChangeCommand", "Given passwords are same");
+
 		user.matchPassword(command.getOldPassword(), encoder);
 
 		var message = emailProvider.messageBuilder()

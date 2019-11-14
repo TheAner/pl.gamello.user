@@ -11,6 +11,7 @@ import gg.gamello.user.core.domain.User;
 import gg.gamello.user.core.domain.UserFactory;
 import gg.gamello.user.core.domain.UserRepository;
 import gg.gamello.user.core.domain.confirmation.Confirmation;
+import gg.gamello.user.core.infrastructure.exception.PropertyConflictException;
 import gg.gamello.user.core.infrastructure.exception.UserAlreadyExistsException;
 import gg.gamello.user.core.infrastructure.exception.UserDoesNotExistsException;
 import gg.gamello.user.core.infrastructure.exception.UserIsNotActiveException;
@@ -81,8 +82,11 @@ public class UserRequestApplicationService {
 		}
 	}
 
-	public void createEmailChangeRequest(AuthenticationContainer container, EmailChangeRequestCommand command) {
+	public void createEmailChangeRequest(AuthenticationContainer container, EmailChangeRequestCommand command) throws PropertyConflictException {
 		User user = findUser(container);
+		if (user.getEmail().equals(command.getEmail()))
+			throw new PropertyConflictException("email", "Given email is same as existing one");
+
 		var confirmationRequest = CreateCommand.builder()
 				.user(UserDtoAssembler.convertDefault(user))
 				.action(ActionType.EMAIL)

@@ -9,6 +9,7 @@ import gg.gamello.user.core.application.dto.UserDto;
 import gg.gamello.user.core.application.dto.UserDtoAssembler;
 import gg.gamello.user.core.domain.User;
 import gg.gamello.user.core.domain.UserRepository;
+import gg.gamello.user.core.infrastructure.exception.PropertyConflictException;
 import gg.gamello.user.core.infrastructure.exception.UserAlreadyExistsException;
 import gg.gamello.user.core.infrastructure.exception.UserDoesNotExistsException;
 import gg.gamello.user.infrastructure.security.AuthenticationContainer;
@@ -40,8 +41,11 @@ public class UserApplicationService {
 		userRepository.save(user);
 	}
 
-	public void changeSlug(AuthenticationContainer container, SlugChangeCommand command) throws UserAlreadyExistsException {
+	public void changeSlug(AuthenticationContainer container, SlugChangeCommand command) throws PropertyConflictException {
 		User user = find(container);
+		if (user.getSlug() != null && user.getSlug().equals(command.getSlug()))
+			throw new PropertyConflictException("slug", "Given slug is same as existing one");
+
 		if (userRepository.existsBySlug(command.getSlug())) {
 			throw new UserAlreadyExistsException("User with slug " +
 					command.getSlug() + " already exists");
@@ -50,8 +54,11 @@ public class UserApplicationService {
 		userRepository.save(user);
 	}
 
-	public void changeVisibleName(AuthenticationContainer container, VisibleNameChangeCommand command) {
+	public void changeVisibleName(AuthenticationContainer container, VisibleNameChangeCommand command) throws PropertyConflictException {
 		User user = find(container);
+		if (user.getVisibleName().equals(command.getVisibleName()))
+			throw new PropertyConflictException("visibleName", "Given visibleName is same as existing one");
+
 		user.changeVisibleName(command.getVisibleName());
 		userRepository.save(user);
 	}

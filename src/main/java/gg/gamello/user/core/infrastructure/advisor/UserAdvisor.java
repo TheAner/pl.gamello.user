@@ -1,7 +1,7 @@
 package gg.gamello.user.core.infrastructure.advisor;
 
 import gg.gamello.user.core.infrastructure.exception.PasswordsDontMatchException;
-import gg.gamello.user.core.infrastructure.exception.UserAlreadyExistsException;
+import gg.gamello.user.core.infrastructure.exception.PropertyConflictException;
 import gg.gamello.user.core.infrastructure.exception.UserDoesNotExistsException;
 import gg.gamello.user.core.infrastructure.exception.UserIsNotActiveException;
 import gg.gamello.user.infrastructure.exception.ErrorMessage;
@@ -24,11 +24,12 @@ public class UserAdvisor {
 	}
 
 	@ResponseBody
-	@ExceptionHandler(UserAlreadyExistsException.class)
+	@ExceptionHandler(PropertyConflictException.class)
 	@ResponseStatus(HttpStatus.CONFLICT)
-	ErrorMessage accountAlreadyExistsHandler(UserAlreadyExistsException ex) {
+	ErrorMessage accountAlreadyExistsHandler(PropertyConflictException ex) {
 		return ErrorMessage.builder()
-				.error(ex.getMessage())
+				.error("Property conflict has occurred")
+				.addDetail(ex.getPropertyName(), ex.getMessage())
 				.build();
 	}
 

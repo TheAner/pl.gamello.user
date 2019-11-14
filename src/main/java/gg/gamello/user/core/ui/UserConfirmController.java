@@ -9,6 +9,7 @@ import gg.gamello.user.core.application.UserConfirmApplicationService;
 import gg.gamello.user.core.application.command.*;
 import gg.gamello.user.core.application.dto.UserDto;
 import gg.gamello.user.core.infrastructure.exception.PasswordsDontMatchException;
+import gg.gamello.user.core.infrastructure.exception.PropertyConflictException;
 import gg.gamello.user.core.infrastructure.exception.UserDoesNotExistsException;
 import gg.gamello.user.core.infrastructure.exception.UserIsNotActiveException;
 import gg.gamello.user.infrastructure.security.AuthenticationContainer;
@@ -59,7 +60,7 @@ public class UserConfirmController {
 	@PostMapping("/change/password")
 	public ResponseEntity<Void> passwordChange(@AuthenticationPrincipal User user,
 											   @Valid @RequestBody PasswordChangeCommand command)
-			throws PasswordsDontMatchException {
+			throws PasswordsDontMatchException, PropertyConflictException {
 		applicationService.changePassword(AuthenticationContainer.contain(user), command);
 		return ResponseEntity.ok().build();
 	}

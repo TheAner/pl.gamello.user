@@ -1,7 +1,7 @@
 package gg.gamello.user.core.infrastructure.exception;
 
-public class UserAlreadyExistsException extends UserException {
+public class UserAlreadyExistsException extends PropertyConflictException {
 	public UserAlreadyExistsException(String message) {
-		super(message);
+		super("user", message);
 	}
 }
