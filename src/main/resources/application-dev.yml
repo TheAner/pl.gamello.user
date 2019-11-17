@@ -2,7 +2,7 @@
 # intended use: running on Gamello main development cluster
 spring:
     datasource:
-        url: jdbc:mysql://general.ck1oeylufjs2.eu-central-1.rds.amazonaws.com::3306/gamello_user
+        url: jdbc:mysql://general.ck1oeylufjs2.eu-central-1.rds.amazonaws.com:3306/gamello_user
         username: s_user
         password: ftTAwQnA8SupEB4gY87fLyvUHxU4kNtJ
     jpa:
@@ -18,7 +18,7 @@ aws:
         s3: eu-central-1
 confirmation:
     email:
-        service-url: "http://mailer/transactional"
+        service-url: "http://mailer.gamello:8080/transactional"
 avatar:
     bucket-name: gamello-upload
     avatars-location: test/images/avatars/
