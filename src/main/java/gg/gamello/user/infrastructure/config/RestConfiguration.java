@@ -1,6 +1,5 @@
 package gg.gamello.user.infrastructure.config;
 
-import org.springframework.cloud.client.loadbalancer.LoadBalanced;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
@@ -9,7 +8,6 @@ import org.springframework.web.client.RestTemplate;
 public class RestConfiguration {
 
 	@Bean
-	@LoadBalanced
 	public RestTemplate restTemplate() {
 		return new RestTemplate();
 	}

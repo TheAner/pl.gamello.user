@@ -11,9 +11,6 @@ spring:
     redis:
         host: 127.0.0.1
         port: 6379
-eureka:
-    client:
-        enabled: false
 aws:
     access: AKIARYQQ3CL4AK5IW57G
     secret: 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
