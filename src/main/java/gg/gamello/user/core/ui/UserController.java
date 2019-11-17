@@ -31,8 +31,8 @@ public class UserController {
 	}
 
 	@GetMapping("/special/{slug}")
-	public ResponseEntity<UserDto> getLoggedUser(@PathVariable String slug) throws UserDoesNotExistsException {
-		var userDto = applicationService.getUserBySlug(slug);
+	public ResponseEntity<UserDto> getBySlug(@PathVariable String slug) throws UserDoesNotExistsException {
+		var userDto = applicationService.getBySlug(slug);
 		return ResponseEntity.ok(userDto);
 	}
 

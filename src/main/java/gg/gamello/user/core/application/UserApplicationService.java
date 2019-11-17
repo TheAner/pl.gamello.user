@@ -31,7 +31,7 @@ public class UserApplicationService {
 		return UserDtoAssembler.convertDefault(find(container));
 	}
 
-	public UserDto getUserBySlug(String slug) throws UserDoesNotExistsException {
+	public UserDto getBySlug(String slug) throws UserDoesNotExistsException {
 		return UserDtoAssembler.convertDefault(find(slug));
 	}
 
