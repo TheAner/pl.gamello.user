@@ -8,7 +8,6 @@ import gg.gamello.user.core.application.command.SlugChangeCommand;
 import gg.gamello.user.core.application.command.VisibleNameChangeCommand;
 import gg.gamello.user.core.application.dto.UserDto;
 import gg.gamello.user.core.infrastructure.exception.PropertyConflictException;
-import gg.gamello.user.core.infrastructure.exception.UserAlreadyExistsException;
 import gg.gamello.user.core.infrastructure.exception.UserDoesNotExistsException;
 import gg.gamello.user.infrastructure.security.AuthenticationContainer;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,8 +25,8 @@ public class UserController {
 	UserApplicationService applicationService;
 
 	@GetMapping("/")
-	public ResponseEntity<UserDto> getLoggedUser(@AuthenticationPrincipal AuthenticationContainer user) {
-		var userDto = applicationService.getLoggedUser(user);
+	public ResponseEntity<UserDto> getLogged(@AuthenticationPrincipal User user) {
+		var userDto = applicationService.getLogged(AuthenticationContainer.contain(user));
 		return ResponseEntity.ok(userDto);
 	}
 

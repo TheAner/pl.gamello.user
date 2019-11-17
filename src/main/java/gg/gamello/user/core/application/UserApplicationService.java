@@ -27,7 +27,7 @@ public class UserApplicationService {
 		this.avatarService = avatarService;
 	}
 
-	public UserDto getLoggedUser(AuthenticationContainer container) {
+	public UserDto getLogged(AuthenticationContainer container) {
 		return UserDtoAssembler.convertDefault(find(container));
 	}
 
