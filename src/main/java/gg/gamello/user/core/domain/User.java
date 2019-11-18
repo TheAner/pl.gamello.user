@@ -21,7 +21,7 @@ import java.util.UUID;
  */
 @Entity
 @Table(
-		name = "user",
+		name = "u_user",
 		uniqueConstraints = {@UniqueConstraint(columnNames = {"username", "email", "slug"})}
 )
 @NoArgsConstructor
@@ -54,7 +54,7 @@ public class User extends AbstractAggregateRoot<User> {
 
 	@ManyToMany(fetch = FetchType.EAGER,
 			cascade = CascadeType.ALL)
-	@JoinTable(name = "user_role",
+	@JoinTable(name = "u_user_role",
 			joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
 			inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"))
 	private Set<Role> roles;

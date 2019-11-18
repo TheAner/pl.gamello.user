@@ -7,7 +7,7 @@ import javax.persistence.*;
 
 @Entity
 @Table(
-		name = "role"
+		name = "u_role"
 )
 @Getter
 @NoArgsConstructor

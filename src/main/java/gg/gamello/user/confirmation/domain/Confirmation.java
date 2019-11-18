@@ -20,7 +20,7 @@ import java.util.UUID;
  */
 @Entity
 @Table(
-		name = "confirmation"
+		name = "u_confirmation"
 )
 @NoArgsConstructor
 @Getter
