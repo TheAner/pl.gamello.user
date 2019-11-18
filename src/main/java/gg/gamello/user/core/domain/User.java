@@ -53,7 +53,7 @@ public class User extends AbstractAggregateRoot<User> {
 	private Language language;
 
 	@ManyToMany(fetch = FetchType.EAGER,
-			cascade = CascadeType.ALL)
+			cascade = CascadeType.PERSIST)
 	@JoinTable(name = "u_user_role",
 			joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
 			inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"))
