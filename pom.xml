@@ -10,7 +10,7 @@
     </parent>
     <groupId>gg.gamello</groupId>
     <artifactId>user</artifactId>
-    <version>0.3.0</version>
+    <version>0.4.0</version>
     <name>user</name>
     <description>Gamello User microservice responsible for user data</description>
 
