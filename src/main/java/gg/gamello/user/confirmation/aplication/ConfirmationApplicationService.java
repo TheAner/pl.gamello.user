@@ -41,7 +41,7 @@ public class ConfirmationApplicationService {
 		var message = command.getMethod().getProvider().messageBuilder()
 				.fromCommand(command)
 				.secret(confirmation.getSecret())
-				.withIssuer(httpRequest.getRemoteAddr())
+				.withIssuer(httpRequest.getHeader("x-forwarded-for").split(",")[0])
 				.build();
 		command.getMethod().getProvider().send(message);
 

@@ -99,7 +99,7 @@ public class UserConfirmApplicationService {
 		var message = emailProvider.messageBuilder()
 				.user(user.getId(), user.getUsername(), user.getEmail())
 				.language(user.getLanguage())
-				.withIssuer(httpRequest.getRemoteAddr())
+				.withIssuer(httpRequest.getHeader("x-forwarded-for").split(",")[0])
 				.useTemplateChanged(ActionType.PASSWORD)
 				.build();
 		emailProvider.send(message);
@@ -123,7 +123,7 @@ public class UserConfirmApplicationService {
 		var message = emailProvider.messageBuilder()
 				.user(user.getId(), user.getUsername(), user.getEmail())
 				.language(user.getLanguage())
-				.withIssuer(httpRequest.getRemoteAddr())
+				.withIssuer(httpRequest.getHeader("x-forwarded-for").split(",")[0])
 				.useTemplateChanged(ActionType.EMAIL)
 				.addData("newEmail", newEmail)
 				.build();
