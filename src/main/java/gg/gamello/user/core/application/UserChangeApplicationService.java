@@ -1,11 +1,11 @@
 package gg.gamello.user.core.application;
 
+import gg.gamello.user.avatar.AvatarService;
+import gg.gamello.user.avatar.exception.AvatarException;
 import gg.gamello.user.confirmation.aplication.command.CreateCommand;
 import gg.gamello.user.confirmation.domain.action.ActionType;
 import gg.gamello.user.confirmation.domain.method.MethodType;
-import gg.gamello.user.core.application.command.EmailChangeRequestCommand;
-import gg.gamello.user.core.application.command.RecoverRequestCommand;
-import gg.gamello.user.core.application.command.RegisterCommand;
+import gg.gamello.user.core.application.command.*;
 import gg.gamello.user.core.application.dto.UserDtoAssembler;
 import gg.gamello.user.core.domain.User;
 import gg.gamello.user.core.domain.UserFactory;
@@ -19,26 +19,29 @@ import gg.gamello.user.infrastructure.security.AuthenticationContainer;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.UUID;
 
 @Slf4j
 @Service
-public class UserRequestApplicationService {
+public class UserChangeApplicationService {
 
 	private final UserFactory userFactory;
 	private final UserRepository userRepository;
 	private final Confirmation confirmation;
+	private final AvatarService avatarService;
 
-	public UserRequestApplicationService(UserFactory userFactory, UserRepository userRepository,
-										 Confirmation confirmation) {
+	public UserChangeApplicationService(UserFactory userFactory, UserRepository userRepository,
+										Confirmation confirmation, AvatarService avatarService) {
 		this.userFactory = userFactory;
 		this.userRepository = userRepository;
 		this.confirmation = confirmation;
+		this.avatarService = avatarService;
 	}
 
 	@Transactional
-	public UUID create(RegisterCommand command) throws UserAlreadyExistsException {
+	public UUID requestRegister(RegisterCommand command) throws UserAlreadyExistsException {
 		if (userRepository.existsUserByEmailOrUsername(command.getEmail(), command.getUsername()))
 			throw new UserAlreadyExistsException("User with credentials " +
 					command.getEmail() + "/" + command.getUsername() + " already exists");
@@ -54,8 +57,8 @@ public class UserRequestApplicationService {
 		return userRepository.save(user).getId();
 	}
 
-	public void createDeleteRequest(AuthenticationContainer container) {
-		User user = findUser(container);
+	public void requestDelete(AuthenticationContainer container) {
+		User user = find(container);
 		var confirmationRequest = CreateCommand.builder()
 				.user(UserDtoAssembler.convertDefault(user))
 				.action(ActionType.DELETE)
@@ -65,9 +68,9 @@ public class UserRequestApplicationService {
 		confirmation.request(confirmationRequest);
 	}
 
-	public void createRecoverRequest(RecoverRequestCommand command) {
+	public void requestRecover(RecoverRequestCommand command) {
 		try {
-			User user = findUser(command.getEmail());
+			User user = find(command.getEmail());
 			user.checkActive();
 			var confirmationRequest = CreateCommand.builder()
 					.user(UserDtoAssembler.convertDefault(user))
@@ -82,8 +85,8 @@ public class UserRequestApplicationService {
 		}
 	}
 
-	public void createEmailChangeRequest(AuthenticationContainer container, EmailChangeRequestCommand command) throws PropertyConflictException {
-		User user = findUser(container);
+	public void requestEmailChange(AuthenticationContainer container, EmailChangeRequestCommand command) throws PropertyConflictException {
+		User user = find(container);
 		if (user.getEmail().equals(command.getEmail()))
 			throw new PropertyConflictException("email", "Given email is same as existing one");
 
@@ -97,12 +100,51 @@ public class UserRequestApplicationService {
 		confirmation.request(confirmationRequest);
 	}
 
-	private User findUser(String email) throws UserDoesNotExistsException {
+	public void changeLanguage(AuthenticationContainer container, LanguageChangeCommand command) {
+		User user = find(container);
+		user.changeLanguage(command.getLanguage());
+		userRepository.save(user);
+	}
+
+	public void changeSlug(AuthenticationContainer container, SlugChangeCommand command) throws PropertyConflictException {
+		User user = find(container);
+		if (user.getSlug() != null && user.getSlug().equals(command.getSlug()))
+			throw new PropertyConflictException("slug", "Given slug is same as existing one");
+
+		if (userRepository.existsBySlug(command.getSlug())) {
+			throw new UserAlreadyExistsException("User with slug " +
+					command.getSlug() + " already exists");
+		}
+		user.changeSlug(command.getSlug());
+		userRepository.save(user);
+	}
+
+	public void changeVisibleName(AuthenticationContainer container, VisibleNameChangeCommand command) throws PropertyConflictException {
+		User user = find(container);
+		if (user.getVisibleName().equals(command.getVisibleName()))
+			throw new PropertyConflictException("visibleName", "Given visibleName is same as existing one");
+
+		user.changeVisibleName(command.getVisibleName());
+		userRepository.save(user);
+	}
+
+	public void changeAvatar(AuthenticationContainer container, MultipartFile image) throws AvatarException, InterruptedException {
+		User user = find(container);
+
+		var avatars = avatarService.generateAvatars(image);
+		var location = avatarService.uploadListOfAvatars(avatars, user.getUsername());
+		avatarService.deleteAvatarsInLocation(user.getAvatarLocation());
+
+		user.changeAvatarLocation(location);
+		userRepository.save(user);
+	}
+
+	private User find(String email) throws UserDoesNotExistsException {
 		return userRepository.findByEmail(email)
 				.orElseThrow(() -> new UserDoesNotExistsException(email, "User does not exists"));
 	}
 
-	private User findUser(AuthenticationContainer container) {
+	private User find(AuthenticationContainer container) {
 		return userRepository.findById(container.getUser().getId())
 				.orElseThrow(() -> new IllegalStateException("User from authentication does not exists"));
 	}

@@ -99,7 +99,7 @@ public class UserConfirmApplicationService {
 		var message = emailProvider.messageBuilder()
 				.user(user.getId(), user.getUsername(), user.getEmail())
 				.language(user.getLanguage())
-				.withIssuer(httpRequest.getHeader("x-forwarded-for").split(",")[0])
+				.withIssuer(getRemoteAddress(httpRequest))
 				.useTemplateChanged(ActionType.PASSWORD)
 				.build();
 		emailProvider.send(message);
@@ -123,7 +123,8 @@ public class UserConfirmApplicationService {
 		var message = emailProvider.messageBuilder()
 				.user(user.getId(), user.getUsername(), user.getEmail())
 				.language(user.getLanguage())
-				.withIssuer(httpRequest.getHeader("x-forwarded-for").split(",")[0])
+				//.withIssuer(httpRequest.getHeader("x-forwarded-for").split(",")[0])
+				.withIssuer(httpRequest.getRemoteAddr())
 				.useTemplateChanged(ActionType.EMAIL)
 				.addData("newEmail", newEmail)
 				.build();
@@ -164,5 +165,12 @@ public class UserConfirmApplicationService {
 	private User find(AuthenticationContainer container) {
 		return userRepository.findById(container.getUser().getId())
 				.orElseThrow(() -> new IllegalStateException("User from authentication does not exists"));
+	}
+
+	private String getRemoteAddress(HttpServletRequest httpRequest) {
+		if (httpRequest.getHeader("x-forwarded-for") != null) {
+			return httpRequest.getHeader("x-forwarded-for").split(",")[0];
+		}
+		else return httpRequest.getRemoteUser();
 	}
 }

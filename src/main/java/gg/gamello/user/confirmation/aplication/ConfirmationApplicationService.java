@@ -41,7 +41,7 @@ public class ConfirmationApplicationService {
 		var message = command.getMethod().getProvider().messageBuilder()
 				.fromCommand(command)
 				.secret(confirmation.getSecret())
-				.withIssuer(httpRequest.getHeader("x-forwarded-for").split(",")[0])
+				.withIssuer(getRemoteAddress(httpRequest))
 				.build();
 		command.getMethod().getProvider().send(message);
 
@@ -71,5 +71,12 @@ public class ConfirmationApplicationService {
 		return confirmationRepository
 				.findByUserIdAndActionType(userId, actionType)
 				.orElseThrow(() -> new ConfirmationDoesNotExistsException(userId, actionType, "Confirmation does not exists"));
+	}
+
+	private String getRemoteAddress(HttpServletRequest httpRequest) {
+		if (httpRequest.getHeader("x-forwarded-for") != null) {
+			return httpRequest.getHeader("x-forwarded-for").split(",")[0];
+		}
+		else return httpRequest.getRemoteUser();
 	}
 }
