@@ -1,6 +1,5 @@
 package gg.gamello.user.core.application.command;
 
-import gg.gamello.user.core.application.command.validation.PasswordPolicy;
 import lombok.Data;
 
 import javax.validation.constraints.NotEmpty;
@@ -11,6 +10,5 @@ public class CredentialsCommand {
 	private String login;
 
 	@NotEmpty(message = "Password can not be empty")
-	@PasswordPolicy
 	private String password;
 }
