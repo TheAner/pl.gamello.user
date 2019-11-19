@@ -1,21 +1,18 @@
 package gg.gamello.user.core.ui;
 
-import gg.gamello.dev.authentication.model.User;
 import gg.gamello.user.confirmation.infrastructure.exception.ConfirmationDoesNotExistsException;
 import gg.gamello.user.confirmation.infrastructure.exception.ConfirmationException;
 import gg.gamello.user.confirmation.infrastructure.exception.IncorrectSecretException;
 import gg.gamello.user.confirmation.infrastructure.exception.OutdatedConfirmationException;
 import gg.gamello.user.core.application.UserConfirmApplicationService;
-import gg.gamello.user.core.application.command.*;
+import gg.gamello.user.core.application.command.CheckSecretCommand;
+import gg.gamello.user.core.application.command.ConfirmCommand;
+import gg.gamello.user.core.application.command.CredentialsCommand;
+import gg.gamello.user.core.application.command.RecoverConfirmCommand;
 import gg.gamello.user.core.application.dto.UserDto;
-import gg.gamello.user.core.infrastructure.exception.PasswordsDontMatchException;
-import gg.gamello.user.core.infrastructure.exception.PropertyConflictException;
 import gg.gamello.user.core.infrastructure.exception.UserDoesNotExistsException;
 import gg.gamello.user.core.infrastructure.exception.UserIsNotActiveException;
-import gg.gamello.user.infrastructure.security.AuthenticationContainer;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -27,54 +24,41 @@ import javax.validation.Valid;
 public class UserConfirmController {
 
 	@Autowired
-	UserConfirmApplicationService applicationService;
+	UserConfirmApplicationService confirmService;
 
 	@PostMapping("/confirm")
-	public ResponseEntity<Void> confirmUser(@Valid @RequestBody ConfirmCommand command)
+	public void activate(@Valid @RequestBody ConfirmCommand command)
 			throws ConfirmationException, UserDoesNotExistsException {
-		applicationService.activate(command);
-		return ResponseEntity.ok().build();
+		confirmService.activate(command);
 	}
 
 	@DeleteMapping("/confirm")
-	public ResponseEntity<Void> confirmUserDelete(@Valid @RequestBody ConfirmCommand command)
+	public void delete(@Valid @RequestBody ConfirmCommand command)
 			throws ConfirmationException, UserDoesNotExistsException {
-		applicationService.delete(command);
-		return ResponseEntity.ok().build();
+		confirmService.delete(command);
 	}
 
 	@PostMapping("/confirm/email")
-	public ResponseEntity<Void> confirmEmail(@Valid @RequestBody ConfirmCommand command)
+	public void email(@Valid @RequestBody ConfirmCommand command)
 			throws ConfirmationException, UserDoesNotExistsException {
-		applicationService.changeEmail(command);
-		return ResponseEntity.ok().build();
+		confirmService.changeEmail(command);
 	}
 
 	@PostMapping("/confirm/password")
-	public ResponseEntity<Void> confirmPassword(@Valid @RequestBody RecoverConfirmCommand command)
+	public void password(@Valid @RequestBody RecoverConfirmCommand command)
 			throws ConfirmationException, UserDoesNotExistsException {
-		applicationService.recover(command);
-		return ResponseEntity.ok().build();
-	}
-
-	@PostMapping("/change/password")
-	public ResponseEntity<Void> passwordChange(@AuthenticationPrincipal User user,
-											   @Valid @RequestBody PasswordChangeCommand command)
-			throws PasswordsDontMatchException, PropertyConflictException {
-		applicationService.changePassword(AuthenticationContainer.contain(user), command);
-		return ResponseEntity.ok().build();
+		confirmService.recover(command);
 	}
 
 	@PostMapping("/check")
-	public ResponseEntity<Void> checkSecret(@Valid @RequestBody CheckSecretCommand command)
+	public void checkSecret(@Valid @RequestBody CheckSecretCommand command)
 			throws IncorrectSecretException, ConfirmationDoesNotExistsException, OutdatedConfirmationException {
-		applicationService.checkSecret(command);
-		return ResponseEntity.ok().build();
+		confirmService.checkSecret(command);
 	}
 
 	@PostMapping("/api/authenticate")
 	public UserDto authenticateCredentials(@RequestBody CredentialsCommand command)
 			throws UserDoesNotExistsException, UserIsNotActiveException {
-		return applicationService.authenticateCredentials(command);
+		return confirmService.authenticateCredentials(command);
 	}
 }

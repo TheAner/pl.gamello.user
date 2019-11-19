@@ -1,69 +1,32 @@
 package gg.gamello.user.core.ui;
 
 import gg.gamello.dev.authentication.model.User;
-import gg.gamello.user.avatar.exception.AvatarException;
 import gg.gamello.user.core.application.UserApplicationService;
-import gg.gamello.user.core.application.command.LanguageChangeCommand;
-import gg.gamello.user.core.application.command.SlugChangeCommand;
-import gg.gamello.user.core.application.command.VisibleNameChangeCommand;
 import gg.gamello.user.core.application.dto.UserDto;
-import gg.gamello.user.core.infrastructure.exception.PropertyConflictException;
 import gg.gamello.user.core.infrastructure.exception.UserDoesNotExistsException;
 import gg.gamello.user.infrastructure.security.AuthenticationContainer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
-
-import javax.validation.Valid;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-public class UserController {
+public class UserController { //todo: delete
 
 	@Autowired
-	UserApplicationService applicationService;
+	UserApplicationService userService;
 
-	@GetMapping("/")
+	@GetMapping("/") //todo: move into cqrs in future
 	public ResponseEntity<UserDto> getLogged(@AuthenticationPrincipal User user) {
-		var userDto = applicationService.getLogged(AuthenticationContainer.contain(user));
+		var userDto = userService.getLogged(AuthenticationContainer.contain(user));
 		return ResponseEntity.ok(userDto);
 	}
 
-	@GetMapping("/special/{slug}")
+	@GetMapping("/special/{slug}") //todo: move into cqrs in future
 	public ResponseEntity<UserDto> getBySlug(@PathVariable String slug) throws UserDoesNotExistsException {
-		var userDto = applicationService.getBySlug(slug);
+		var userDto = userService.getBySlug(slug);
 		return ResponseEntity.ok(userDto);
-	}
-
-	@PostMapping("/change/language")
-	public ResponseEntity<Void> languageChange(@AuthenticationPrincipal User user,
-													   @RequestBody LanguageChangeCommand command) {
-		applicationService.changeLanguage(AuthenticationContainer.contain(user), command);
-		return ResponseEntity.ok().build();
-	}
-
-	@PostMapping("/change/slug")
-	public ResponseEntity<Void> slugChange(@AuthenticationPrincipal User user,
-										   @Valid @RequestBody SlugChangeCommand command)
-			throws PropertyConflictException {
-		applicationService.changeSlug(AuthenticationContainer.contain(user), command);
-		return ResponseEntity.ok().build();
-	}
-
-	@PostMapping("/change/name")
-	public ResponseEntity<Void> visibleNameChange(@AuthenticationPrincipal User user,
-												  @Valid @RequestBody VisibleNameChangeCommand command)
-			throws PropertyConflictException {
-		applicationService.changeVisibleName(AuthenticationContainer.contain(user), command);
-		return ResponseEntity.ok().build();
-	}
-
-	@PostMapping("/change/avatar")
-	public ResponseEntity<Void> avatarChange(@AuthenticationPrincipal User user,
-											 @RequestParam("file") MultipartFile image)
-			throws AvatarException, InterruptedException {
-		applicationService.changeAvatar(AuthenticationContainer.contain(user), image);
-		return ResponseEntity.ok().build();
 	}
 }
