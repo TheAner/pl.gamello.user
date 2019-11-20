@@ -1,6 +1,7 @@
 package gg.gamello.user.infrastructure.advisor;
 
-import gg.gamello.user.avatar.exception.InvalidFileException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import gg.gamello.user.command.avatar.exception.InvalidFileException;
 import gg.gamello.user.infrastructure.exception.ErrorMessage;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -60,5 +61,18 @@ public class ServiceAdvisor {
 			error.addDetail(fieldError.getField(), fieldError.getDefaultMessage());
 		}
 		return error.build();
+	}
+
+	@ExceptionHandler(JsonMappingException.class)
+	@ResponseStatus(HttpStatus.BAD_REQUEST)
+	@ResponseBody
+	ErrorMessage onJsonMappingException(JsonMappingException e) {
+		var error = ErrorMessage.builder()
+				.error("Mapping failed for argument [" + e.getPath().get(0).getFieldName() + "]");
+		var referenceChain = e.getMessage().indexOf("through reference chain");
+		error.addDetail(e.getPath().get(0).getFieldName(),
+				e.getMessage().substring(0, (referenceChain>0?referenceChain-1:e.getMessage().length()-1)));
+		log.debug(error.build().toString());
+		return ErrorMessage.builder().error("Input must be valid").build();
 	}
 }
