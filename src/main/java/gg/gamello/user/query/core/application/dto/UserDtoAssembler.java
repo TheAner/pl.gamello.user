@@ -25,36 +25,16 @@ public class UserDtoAssembler {
 	public UserDtoAssembler detailed() {
 		simple();
 		userDto.setSlug(user.getSlug());
-		userDto.setActive(user.isActive());
 		userDto.setRegistered(user.getRegistered());
 		return this;
 	}
 
 	public UserDtoAssembler secured() {
 		detailed();
-		withUsername();
-		withLanguage();
-		withEmail();
-		withRoles();
-		return this;
-	}
-
-	public UserDtoAssembler withUsername() {
+		userDto.setActive(user.isActive());
 		userDto.setUsername(user.getUsername());
-		return this;
-	}
-
-	public UserDtoAssembler withLanguage() {
 		userDto.setLanguage(user.getLanguage());
-		return this;
-	}
-
-	public UserDtoAssembler withEmail() {
 		userDto.setEmail(user.getEmail());
-		return this;
-	}
-
-	public UserDtoAssembler withRoles() {
 		userDto.setRoles(user.getRoles());
 		return this;
 	}
