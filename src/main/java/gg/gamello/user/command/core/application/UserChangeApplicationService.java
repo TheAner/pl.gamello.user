@@ -57,7 +57,7 @@ public class UserChangeApplicationService {
 		User user = userFactory.create(command);
 
 		var confirmationRequest = CreateCommand.builder()
-				.user(UserDtoAssembler.builder(user).detailed().build())
+				.user(UserDtoAssembler.builder(user).secured().build())
 				.action(ActionType.ACTIVATION)
 				.method(MethodType.EMAIL)
 				.build();
@@ -69,7 +69,7 @@ public class UserChangeApplicationService {
 	public void requestDelete(AuthenticationContainer container) {
 		User user = self.find(container);
 		var confirmationRequest = CreateCommand.builder()
-				.user(UserDtoAssembler.builder(user).detailed().build())
+				.user(UserDtoAssembler.builder(user).secured().build())
 				.action(ActionType.DELETE)
 				.method(MethodType.EMAIL)
 				.build();
@@ -82,7 +82,7 @@ public class UserChangeApplicationService {
 			User user = find(command.getEmail());
 			user.checkActive();
 			var confirmationRequest = CreateCommand.builder()
-					.user(UserDtoAssembler.builder(user).detailed().build())
+					.user(UserDtoAssembler.builder(user).secured().build())
 					.action(ActionType.PASSWORD)
 					.method(MethodType.EMAIL)
 					.build();
@@ -100,7 +100,7 @@ public class UserChangeApplicationService {
 			throw new PropertyConflictException("email", "Given email is same as existing one");
 
 		var confirmationRequest = CreateCommand.builder()
-				.user(UserDtoAssembler.builder(user).detailed().build())
+				.user(UserDtoAssembler.builder(user).secured().build())
 				.action(ActionType.EMAIL)
 				.method(MethodType.EMAIL)
 				.attachment(command.getEmail())
