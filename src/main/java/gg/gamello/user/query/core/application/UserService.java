@@ -80,7 +80,7 @@ public class UserService {
 
 		if (detailed) {
 			usersFromRepository.forEach(user -> users
-					.add(UserDtoAssembler.builder(user).detailed().build()));
+					.add(UserDtoAssembler.builder(user).secured().build()));
 		} else {
 			usersFromRepository.forEach(user -> users
 					.add(UserDtoAssembler.builder(user).simple().build()));
