@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.client.RestClientException;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
@@ -72,6 +73,17 @@ public class ServiceAdvisor {
 		var referenceChain = e.getMessage().indexOf("through reference chain");
 		error.addDetail(e.getPath().get(0).getFieldName(),
 				e.getMessage().substring(0, (referenceChain>0?referenceChain-1:e.getMessage().length()-1)));
+		log.debug(error.build().toString());
+		return ErrorMessage.builder().error("Input must be valid").build();
+	}
+
+	@ExceptionHandler(MethodArgumentTypeMismatchException.class)
+	@ResponseStatus(HttpStatus.BAD_REQUEST)
+	@ResponseBody
+	ErrorMessage onMethodArgumentTypeMismatchExceptionException(MethodArgumentTypeMismatchException e) {
+		var error = ErrorMessage.builder()
+				.error("Mapping failed for argument [" + e.getName() + "]");
+		error.addDetail(e.getName(), e.getMessage());
 		log.debug(error.build().toString());
 		return ErrorMessage.builder().error("Input must be valid").build();
 	}

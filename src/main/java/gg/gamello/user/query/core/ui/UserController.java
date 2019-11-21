@@ -13,7 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
@@ -28,21 +28,21 @@ public class UserController {
 		return ResponseEntity.ok(userDto);
 	}
 
-	@GetMapping("/id/{userId}")
+	@GetMapping(value = {"/{userId}", "/api/{userId}"})
 	public ResponseEntity<UserDto> getById(@PathVariable UUID userId) throws UserDoesNotExistsException {
 		var userDto = userService.getById(userId);
 		return ResponseEntity.ok(userDto);
 	}
 
-	@GetMapping("/id")
-	public ResponseEntity<Set<UserDto>> getByIds(@Valid @RequestBody UsersQuery query) {
-		var userDto = userService.getById(query);
+	@GetMapping(value = "/", params = {"ids"})
+	public ResponseEntity<Set<UserDto>> getByIds(@RequestParam("ids") List<UUID> ids) {
+		var userDto = userService.getById(UsersQuery.from(ids));
 		return ResponseEntity.ok(userDto);
 	}
 
-	@GetMapping("/api/id")
-	public ResponseEntity<Set<UserDto>> getByIdsDetailed(@Valid @RequestBody UsersQuery query) {
-		var userDto = userService.getById(query, true);
+	@GetMapping(value = "/api/", params = {"ids"})
+	public ResponseEntity<Set<UserDto>> getByIdsDetailed(@RequestParam("ids") List<UUID> ids) {
+		var userDto = userService.getById(UsersQuery.from(ids), true);
 		return ResponseEntity.ok(userDto);
 	}
 
