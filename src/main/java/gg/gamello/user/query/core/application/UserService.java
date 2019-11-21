@@ -41,25 +41,25 @@ public class UserService {
 	}
 
 	public UserDto getLogged(AuthenticationContainer container) {
-		User user = Optional.ofNullable(find(container.getUser().getId()))
+		User user = Optional.ofNullable(self.find(container.getUser().getId()))
 				.orElseThrow(() -> new IllegalStateException("User from authentication does not exists"));
 
 		return UserDtoAssembler.builder(user).detailed().withLanguage().build();
 	}
 
 	public UserDto getBySlug(String slug) throws UserDoesNotExistsException {
-		return UserDtoAssembler.builder(find(slug)).detailed().build();
+		return UserDtoAssembler.builder(self.find(slug)).detailed().build();
 	}
 
 	public UserDto getById(UUID userId) throws UserDoesNotExistsException {
-		User user = Optional.ofNullable(find(userId))
+		User user = Optional.ofNullable(self.find(userId))
 				.orElseThrow(() -> new UserDoesNotExistsException(userId.toString(), "User does not exists"));
 
 		return UserDtoAssembler.builder(user).detailed().build();
 	}
 
 	public UserDto getSecuredById(UUID userId) throws UserDoesNotExistsException {
-		User user = Optional.ofNullable(find(userId))
+		User user = Optional.ofNullable(self.find(userId))
 				.orElseThrow(() -> new UserDoesNotExistsException(userId.toString(), "User does not exists"));
 
 		return UserDtoAssembler.builder(user).secured().build();

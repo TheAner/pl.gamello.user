@@ -15,12 +15,12 @@ import gg.gamello.user.command.core.infrastructure.exception.PropertyConflictExc
 import gg.gamello.user.command.core.infrastructure.exception.UserDoesNotExistsException;
 import gg.gamello.user.infrastructure.security.AuthenticationContainer;
 import org.springframework.cache.CacheManager;
-import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.util.UUID;
 
@@ -33,6 +33,9 @@ public class UserConfirmApplicationService {
 	private final EmailProvider emailProvider;
 	private final HttpServletRequest httpRequest;
 	private final CacheManager cacheManager;
+
+	@Resource
+	private UserConfirmApplicationService self;
 
 	public UserConfirmApplicationService(UserRepository userRepository, PasswordEncoder encoder,
 										 Confirmation confirmation, EmailProvider emailProvider,
@@ -47,7 +50,7 @@ public class UserConfirmApplicationService {
 
 	@Transactional
 	public void activate(ConfirmCommand command) throws UserDoesNotExistsException, ConfirmationException {
-		User user = find(command.getUserId());
+		User user = self.find(command.getUserId());
 
 		var confirmationCommand = ConfirmationCommand.builder()
 				.userId(user.getId())
@@ -65,7 +68,7 @@ public class UserConfirmApplicationService {
 
 	@Transactional
 	public void delete(ConfirmCommand command) throws UserDoesNotExistsException, ConfirmationException {
-		User user = find(command.getUserId());
+		User user = self.find(command.getUserId());
 
 		var confirmationCommand = ConfirmationCommand.builder()
 				.userId(user.getId())
@@ -83,7 +86,7 @@ public class UserConfirmApplicationService {
 
 	@Transactional
 	public void recover(RecoverConfirmCommand command) throws UserDoesNotExistsException, ConfirmationException {
-		User user = find(command.getUserId());
+		User user = self.find(command.getUserId());
 
 		var confirmationCommand = ConfirmationCommand.builder()
 				.userId(user.getId())
@@ -101,7 +104,7 @@ public class UserConfirmApplicationService {
 
 	@Transactional
 	public void changePassword(AuthenticationContainer container, PasswordChangeCommand command) throws PasswordsDontMatchException, PropertyConflictException {
-		User user = find(container);
+		User user = self.find(container);
 		if (command.getOldPassword().equals(command.getNewPassword()))
 			throw new PropertyConflictException("passwordChangeCommand", "Given passwords are same");
 
@@ -124,7 +127,7 @@ public class UserConfirmApplicationService {
 
 	@Transactional
 	public void changeEmail(ConfirmCommand command) throws UserDoesNotExistsException, ConfirmationException {
-		User user = find(command.getUserId());
+		User user = self.find(command.getUserId());
 
 		var confirmationCommand = ConfirmationCommand.builder()
 				.userId(user.getId())

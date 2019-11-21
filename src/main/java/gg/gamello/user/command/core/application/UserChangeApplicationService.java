@@ -17,11 +17,13 @@ import gg.gamello.user.command.core.infrastructure.exception.UserIsNotActiveExce
 import gg.gamello.user.infrastructure.security.AuthenticationContainer;
 import gg.gamello.user.query.core.application.dto.UserDtoAssembler;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.annotation.Resource;
 import java.util.UUID;
 
 @Slf4j
@@ -32,13 +34,19 @@ public class UserChangeApplicationService {
 	private final UserRepository userRepository;
 	private final Confirmation confirmation;
 	private final AvatarService avatarService;
+	private final CacheManager cacheManager;
+
+	@Resource
+	private UserChangeApplicationService self;
 
 	public UserChangeApplicationService(UserFactory userFactory, UserRepository userRepository,
-										Confirmation confirmation, AvatarService avatarService) {
+										Confirmation confirmation, AvatarService avatarService,
+										CacheManager cacheManager) {
 		this.userFactory = userFactory;
 		this.userRepository = userRepository;
 		this.confirmation = confirmation;
 		this.avatarService = avatarService;
+		this.cacheManager = cacheManager;
 	}
 
 	@Transactional
@@ -59,7 +67,7 @@ public class UserChangeApplicationService {
 	}
 
 	public void requestDelete(AuthenticationContainer container) {
-		User user = find(container);
+		User user = self.find(container);
 		var confirmationRequest = CreateCommand.builder()
 				.user(UserDtoAssembler.builder(user).detailed().build())
 				.action(ActionType.DELETE)
@@ -87,7 +95,7 @@ public class UserChangeApplicationService {
 	}
 
 	public void requestEmailChange(AuthenticationContainer container, EmailChangeRequestCommand command) throws PropertyConflictException {
-		User user = find(container);
+		User user = self.find(container);
 		if (user.getEmail().equals(command.getEmail()))
 			throw new PropertyConflictException("email", "Given email is same as existing one");
 
@@ -102,13 +110,16 @@ public class UserChangeApplicationService {
 	}
 
 	public void changeLanguage(AuthenticationContainer container, LanguageChangeCommand command) {
-		User user = find(container);
+		User user = self.find(container);
 		user.changeLanguage(command.getLanguage());
 		userRepository.save(user);
+		if (cacheManager.getCacheNames().contains("users")){
+			cacheManager.getCache("users").put(user.getId(), user);
+		}
 	}
 
 	public void changeSlug(AuthenticationContainer container, SlugChangeCommand command) throws PropertyConflictException {
-		User user = find(container);
+		User user = self.find(container);
 		if (user.getSlug() != null && user.getSlug().equals(command.getSlug()))
 			throw new PropertyConflictException("slug", "Given slug is same as existing one");
 
@@ -118,19 +129,25 @@ public class UserChangeApplicationService {
 		}
 		user.changeSlug(command.getSlug());
 		userRepository.save(user);
+		if (cacheManager.getCacheNames().contains("users")){
+			cacheManager.getCache("users").put(user.getId(), user);
+		}
 	}
 
 	public void changeVisibleName(AuthenticationContainer container, VisibleNameChangeCommand command) throws PropertyConflictException {
-		User user = find(container);
+		User user = self.find(container);
 		if (user.getVisibleName().equals(command.getVisibleName()))
 			throw new PropertyConflictException("visibleName", "Given visibleName is same as existing one");
 
 		user.changeVisibleName(command.getVisibleName());
 		userRepository.save(user);
+		if (cacheManager.getCacheNames().contains("users")){
+			cacheManager.getCache("users").put(user.getId(), user);
+		}
 	}
 
 	public void changeAvatar(AuthenticationContainer container, MultipartFile image) throws AvatarException, InterruptedException {
-		User user = find(container);
+		User user = self.find(container);
 
 		var avatars = avatarService.generateAvatars(image);
 		var location = avatarService.uploadListOfAvatars(avatars, user.getUsername());
@@ -138,6 +155,9 @@ public class UserChangeApplicationService {
 
 		user.changeAvatarLocation(location);
 		userRepository.save(user);
+		if (cacheManager.getCacheNames().contains("users")){
+			cacheManager.getCache("users").put(user.getId(), user);
+		}
 	}
 
 	public User find(String email) throws UserDoesNotExistsException {
