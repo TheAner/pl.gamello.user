@@ -6,7 +6,6 @@ import gg.gamello.user.command.confirmation.aplication.command.CreateCommand;
 import gg.gamello.user.command.confirmation.domain.action.ActionType;
 import gg.gamello.user.command.confirmation.domain.method.MethodType;
 import gg.gamello.user.command.core.application.command.*;
-import gg.gamello.user.query.core.application.dto.UserDtoAssembler;
 import gg.gamello.user.command.core.domain.User;
 import gg.gamello.user.command.core.domain.UserFactory;
 import gg.gamello.user.command.core.domain.UserRepository;
@@ -16,6 +15,7 @@ import gg.gamello.user.command.core.infrastructure.exception.UserAlreadyExistsEx
 import gg.gamello.user.command.core.infrastructure.exception.UserDoesNotExistsException;
 import gg.gamello.user.command.core.infrastructure.exception.UserIsNotActiveException;
 import gg.gamello.user.infrastructure.security.AuthenticationContainer;
+import gg.gamello.user.query.core.application.dto.UserDtoAssembler;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

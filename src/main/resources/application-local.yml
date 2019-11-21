@@ -8,6 +8,10 @@ spring:
     jpa:
         hibernate:
             ddl-auto: create-drop
+    cache:
+        type: redis
+        redis:
+            time-to-live: 3600
     redis:
         host: 127.0.0.1
         port: 6379

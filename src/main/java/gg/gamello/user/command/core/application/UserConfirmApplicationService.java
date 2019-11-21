@@ -12,6 +12,7 @@ import gg.gamello.user.command.core.infrastructure.exception.PasswordsDontMatchE
 import gg.gamello.user.command.core.infrastructure.exception.PropertyConflictException;
 import gg.gamello.user.command.core.infrastructure.exception.UserDoesNotExistsException;
 import gg.gamello.user.infrastructure.security.AuthenticationContainer;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -39,6 +40,7 @@ public class UserConfirmApplicationService {
 	}
 
 	@Transactional
+	@CacheEvict(value = "users", key = "#command.userId")
 	public void activate(ConfirmCommand command) throws UserDoesNotExistsException, ConfirmationException {
 		User user = find(command.getUserId());
 
@@ -54,6 +56,7 @@ public class UserConfirmApplicationService {
 	}
 
 	@Transactional
+	@CacheEvict(value = "users", key = "#command.userId")
 	public void delete(ConfirmCommand command) throws UserDoesNotExistsException, ConfirmationException {
 		User user = find(command.getUserId());
 
@@ -68,6 +71,7 @@ public class UserConfirmApplicationService {
 	}
 
 	@Transactional
+	@CacheEvict(value = "users", key = "#command.userId")
 	public void recover(RecoverConfirmCommand command) throws UserDoesNotExistsException, ConfirmationException {
 		User user = find(command.getUserId());
 
@@ -83,6 +87,7 @@ public class UserConfirmApplicationService {
 	}
 
 	@Transactional
+	@CacheEvict(value = "users", key = "#container.user.id")
 	public void changePassword(AuthenticationContainer container, PasswordChangeCommand command) throws PasswordsDontMatchException, PropertyConflictException {
 		User user = find(container);
 		if (command.getOldPassword().equals(command.getNewPassword()))
@@ -103,6 +108,7 @@ public class UserConfirmApplicationService {
 	}
 
 	@Transactional
+	@CacheEvict(value = "users", key = "#command.userId")
 	public void changeEmail(ConfirmCommand command) throws UserDoesNotExistsException, ConfirmationException {
 		User user = find(command.getUserId());
 

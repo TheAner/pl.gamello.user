@@ -16,6 +16,7 @@ import gg.gamello.user.query.core.application.dto.UserDtoAssembler;
 import gg.gamello.user.query.core.application.query.CheckSecretQuery;
 import gg.gamello.user.query.core.application.query.CredentialsQuery;
 import gg.gamello.user.query.core.application.query.UsersQuery;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -36,14 +37,17 @@ public class UserService {
 		this.confirmation = confirmation;
 	}
 
+	@Cacheable(value = "users", key = "#container.user.id")
 	public UserDto getLogged(AuthenticationContainer container) {
 		return UserDtoAssembler.convertDetailed(find(container));
 	}
 
+	@Cacheable(value = "users", key = "#slug")
 	public UserDto getBySlug(String slug) throws UserDoesNotExistsException {
 		return UserDtoAssembler.convertDetailed(find(slug));
 	}
 
+	@Cacheable(value = "users", key = "#userId")
 	public UserDto getById(UUID userId) throws UserDoesNotExistsException {
 		return UserDtoAssembler.convertDetailed(find(userId));
 	}
