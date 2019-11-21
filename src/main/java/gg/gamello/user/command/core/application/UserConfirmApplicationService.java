@@ -117,8 +117,7 @@ public class UserConfirmApplicationService {
 		var message = emailProvider.messageBuilder()
 				.user(user.getId(), user.getUsername(), user.getEmail())
 				.language(user.getLanguage())
-				//.withIssuer(httpRequest.getHeader("x-forwarded-for").split(",")[0])
-				.withIssuer(httpRequest.getRemoteAddr())
+				.withIssuer(getRemoteAddress(httpRequest))
 				.useTemplateChanged(ActionType.EMAIL)
 				.addData("newEmail", newEmail)
 				.build();

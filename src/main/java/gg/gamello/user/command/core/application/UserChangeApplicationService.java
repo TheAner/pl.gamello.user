@@ -81,7 +81,7 @@ public class UserChangeApplicationService {
 			confirmation.request(confirmationRequest);
 
 		} catch (UserDoesNotExistsException | UserIsNotActiveException e) {
-			log.error(e.getMessage());
+			log.debug(e.getMessage());
 		}
 	}
 
