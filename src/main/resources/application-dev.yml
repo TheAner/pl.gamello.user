@@ -8,6 +8,10 @@ spring:
     jpa:
         hibernate:
             ddl-auto: update
+    cache:
+        type: redis
+        redis:
+            time-to-live: 3600
     redis:
         host: general.fyeghj.ng.0001.euc1.cache.amazonaws.com
         port: 6379
