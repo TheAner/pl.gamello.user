@@ -24,7 +24,6 @@ public class UserDtoAssembler {
 
 	public UserDtoAssembler detailed() {
 		simple();
-		userDto.setUsername(user.getUsername());
 		userDto.setSlug(user.getSlug());
 		userDto.setActive(user.isActive());
 		userDto.setRegistered(user.getRegistered());
@@ -33,9 +32,15 @@ public class UserDtoAssembler {
 
 	public UserDtoAssembler secured() {
 		detailed();
+		withUsername();
 		withLanguage();
 		withEmail();
 		withRoles();
+		return this;
+	}
+
+	public UserDtoAssembler withUsername() {
+		userDto.setUsername(user.getUsername());
 		return this;
 	}
 

@@ -44,7 +44,7 @@ public class UserService {
 		User user = Optional.ofNullable(self.find(container.getUser().getId()))
 				.orElseThrow(() -> new IllegalStateException("User from authentication does not exists"));
 
-		return UserDtoAssembler.builder(user).detailed().withLanguage().build();
+		return UserDtoAssembler.builder(user).secured().build();
 	}
 
 	public UserDto getBySlug(String slug) throws UserDoesNotExistsException {
