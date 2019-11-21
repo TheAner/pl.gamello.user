@@ -9,7 +9,7 @@ import java.util.Date;
 import java.util.Set;
 import java.util.UUID;
 
-@Data
+@Data @JsonInclude(JsonInclude.Include.NON_NULL)
 public class UserDto {
 	private UUID id;
 
@@ -29,6 +29,5 @@ public class UserDto {
 
 	private Language language;
 
-	@JsonInclude(JsonInclude.Include.NON_NULL)
 	private Set<Role> roles;
 }
