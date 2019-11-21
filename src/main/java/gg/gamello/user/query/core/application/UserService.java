@@ -20,9 +20,9 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.HashSet;
-import java.util.Set;
-import java.util.UUID;
+import javax.annotation.Resource;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class UserService {
@@ -31,25 +31,38 @@ public class UserService {
 	private final PasswordEncoder encoder;
 	private final Confirmation confirmation;
 
+	@Resource
+	private UserService self;
+
 	public UserService(UserRepository userRepository, PasswordEncoder encoder, Confirmation confirmation) {
 		this.userRepository = userRepository;
 		this.encoder = encoder;
 		this.confirmation = confirmation;
 	}
 
-	@Cacheable(value = "users", key = "#container.user.id")
 	public UserDto getLogged(AuthenticationContainer container) {
-		return UserDtoAssembler.convertDetailed(find(container));
+		User user = Optional.ofNullable(find(container.getUser().getId()))
+				.orElseThrow(() -> new IllegalStateException("User from authentication does not exists"));
+
+		return UserDtoAssembler.builder(user).detailed().withLanguage().build();
 	}
 
-	@Cacheable(value = "users", key = "#slug")
 	public UserDto getBySlug(String slug) throws UserDoesNotExistsException {
-		return UserDtoAssembler.convertDetailed(find(slug));
+		return UserDtoAssembler.builder(find(slug)).detailed().build();
 	}
 
-	@Cacheable(value = "users", key = "#userId")
 	public UserDto getById(UUID userId) throws UserDoesNotExistsException {
-		return UserDtoAssembler.convertDetailed(find(userId));
+		User user = Optional.ofNullable(find(userId))
+				.orElseThrow(() -> new UserDoesNotExistsException(userId.toString(), "User does not exists"));
+
+		return UserDtoAssembler.builder(user).detailed().build();
+	}
+
+	public UserDto getSecuredById(UUID userId) throws UserDoesNotExistsException {
+		User user = Optional.ofNullable(find(userId))
+				.orElseThrow(() -> new UserDoesNotExistsException(userId.toString(), "User does not exists"));
+
+		return UserDtoAssembler.builder(user).secured().build();
 	}
 
 	public Set<UserDto> getById(UsersQuery query) {
@@ -60,14 +73,17 @@ public class UserService {
 		if (query.getUserIds() == null || query.getUserIds().isEmpty())
 			return Set.of();
 		Set<UserDto> users = new HashSet<>(query.getUserIds().size());
-		Set<User> usersFromRepository = find(query.getUserIds());
+		Set<User> usersFromRepository = query.getUserIds().stream()
+				.map(uuid -> self.find(uuid))
+				.filter(Objects::nonNull)
+				.collect(Collectors.toSet());
 
 		if (detailed) {
-			usersFromRepository.parallelStream()
-					.forEach(user -> users.add(UserDtoAssembler.convertDetailed(user)));
+			usersFromRepository.forEach(user -> users
+					.add(UserDtoAssembler.builder(user).detailed().build()));
 		} else {
-			usersFromRepository.parallelStream()
-					.forEach(user -> users.add(UserDtoAssembler.convertSimple(user)));
+			usersFromRepository.forEach(user -> users
+					.add(UserDtoAssembler.builder(user).simple().build()));
 		}
 
 		return users;
@@ -93,25 +109,17 @@ public class UserService {
 		if (!encoder.matches(command.getPassword(), user.getPassword()))
 			throw new UserDoesNotExistsException(command.getLogin(), "User does not exists");
 
-		return UserDtoAssembler.convertWithRoles(user);
+		return UserDtoAssembler.builder(user).secured().build();
 	}
 
-	private User find(UUID userId) throws UserDoesNotExistsException {
-		return userRepository.findById(userId)
-				.orElseThrow(() -> new UserDoesNotExistsException(userId.toString(), "User does not exists"));
+	@Cacheable(value = "users", key = "#userId")
+	public User find(UUID userId) {
+		return userRepository.findById(userId).orElse(null);
 	}
 
-	private Set<User> find(Set<UUID> userIds) {
-		return userRepository.findByIdIn(userIds);
-	}
-
-	private User find(String slug) throws UserDoesNotExistsException {
+	@Cacheable(value = "users", key = "#slug")
+	public User find(String slug) throws UserDoesNotExistsException {
 		return userRepository.findBySlug(slug)
 				.orElseThrow(() -> new UserDoesNotExistsException(slug, "User does not exists"));
-	}
-
-	private User find(AuthenticationContainer container) {
-		return userRepository.findById(container.getUser().getId())
-				.orElseThrow(() -> new IllegalStateException("User from authentication does not exists"));
 	}
 }

@@ -28,7 +28,7 @@ public class UserController {
 		return ResponseEntity.ok(userDto);
 	}
 
-	@GetMapping(value = {"/{userId}", "/api/{userId}"})
+	@GetMapping("/{userId}")
 	public ResponseEntity<UserDto> getById(@PathVariable UUID userId) throws UserDoesNotExistsException {
 		var userDto = userService.getById(userId);
 		return ResponseEntity.ok(userDto);
@@ -37,6 +37,12 @@ public class UserController {
 	@GetMapping(value = "/", params = {"ids"})
 	public ResponseEntity<Set<UserDto>> getByIds(@RequestParam("ids") List<UUID> ids) {
 		var userDto = userService.getById(UsersQuery.from(ids));
+		return ResponseEntity.ok(userDto);
+	}
+
+	@GetMapping("/api/{userId}")
+	public ResponseEntity<UserDto> getByIdDetailed(@PathVariable UUID userId) throws UserDoesNotExistsException {
+		var userDto = userService.getSecuredById(userId);
 		return ResponseEntity.ok(userDto);
 	}
 

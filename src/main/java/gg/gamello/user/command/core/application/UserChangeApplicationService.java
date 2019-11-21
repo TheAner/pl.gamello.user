@@ -17,6 +17,7 @@ import gg.gamello.user.command.core.infrastructure.exception.UserIsNotActiveExce
 import gg.gamello.user.infrastructure.security.AuthenticationContainer;
 import gg.gamello.user.query.core.application.dto.UserDtoAssembler;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -48,7 +49,7 @@ public class UserChangeApplicationService {
 		User user = userFactory.create(command);
 
 		var confirmationRequest = CreateCommand.builder()
-				.user(UserDtoAssembler.convertDetailed(user))
+				.user(UserDtoAssembler.builder(user).detailed().build())
 				.action(ActionType.ACTIVATION)
 				.method(MethodType.EMAIL)
 				.build();
@@ -60,7 +61,7 @@ public class UserChangeApplicationService {
 	public void requestDelete(AuthenticationContainer container) {
 		User user = find(container);
 		var confirmationRequest = CreateCommand.builder()
-				.user(UserDtoAssembler.convertDetailed(user))
+				.user(UserDtoAssembler.builder(user).detailed().build())
 				.action(ActionType.DELETE)
 				.method(MethodType.EMAIL)
 				.build();
@@ -73,7 +74,7 @@ public class UserChangeApplicationService {
 			User user = find(command.getEmail());
 			user.checkActive();
 			var confirmationRequest = CreateCommand.builder()
-					.user(UserDtoAssembler.convertDetailed(user))
+					.user(UserDtoAssembler.builder(user).detailed().build())
 					.action(ActionType.PASSWORD)
 					.method(MethodType.EMAIL)
 					.build();
@@ -91,7 +92,7 @@ public class UserChangeApplicationService {
 			throw new PropertyConflictException("email", "Given email is same as existing one");
 
 		var confirmationRequest = CreateCommand.builder()
-				.user(UserDtoAssembler.convertDetailed(user))
+				.user(UserDtoAssembler.builder(user).detailed().build())
 				.action(ActionType.EMAIL)
 				.method(MethodType.EMAIL)
 				.attachment(command.getEmail())
@@ -139,12 +140,13 @@ public class UserChangeApplicationService {
 		userRepository.save(user);
 	}
 
-	private User find(String email) throws UserDoesNotExistsException {
+	public User find(String email) throws UserDoesNotExistsException {
 		return userRepository.findByEmail(email)
 				.orElseThrow(() -> new UserDoesNotExistsException(email, "User does not exists"));
 	}
 
-	private User find(AuthenticationContainer container) {
+	@Cacheable(value = "users", key = "#container.user.id")
+	public User find(AuthenticationContainer container) {
 		return userRepository.findById(container.getUser().getId())
 				.orElseThrow(() -> new IllegalStateException("User from authentication does not exists"));
 	}
