@@ -24,6 +24,6 @@ confirmation:
     email:
         service-url: "http://mailer.gamello:8080/transactional"
 avatar:
-    bucket-name: gamello-upload
+    bucket-name: gamello-upload-dev
     avatars-location: test/images/avatars/
     default-avatar-location: app/images/default_avatar/default_avatar
