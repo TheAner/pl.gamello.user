@@ -12,6 +12,7 @@ import org.springframework.data.domain.AbstractAggregateRoot;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.Date;
 import java.util.Set;
 import java.util.UUID;
@@ -27,7 +28,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @Getter
 @Setter(AccessLevel.PACKAGE)
-public class User extends AbstractAggregateRoot<User> {
+public class User extends AbstractAggregateRoot<User> implements Serializable {
 
 	@Id
 	@Column(columnDefinition = "BINARY(16)")
