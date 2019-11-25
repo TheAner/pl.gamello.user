@@ -17,7 +17,7 @@ public class UserCheckController {
 	@Autowired
 	private UserService userService;
 
-	@PostMapping("/check")
+	@PostMapping("/check/secret")
 	public void checkSecret(@Valid @RequestBody CheckSecretQuery command)
 			throws IncorrectSecretException, ConfirmationDoesNotExistsException, OutdatedConfirmationException {
 		userService.checkSecret(command);
