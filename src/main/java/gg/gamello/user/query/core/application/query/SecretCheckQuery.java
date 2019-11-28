@@ -8,7 +8,7 @@ import lombok.Data;
 import javax.validation.constraints.NotEmpty;
 
 @Data
-public class CheckSecretQuery extends ConfirmCommand {
+public class SecretCheckQuery extends ConfirmCommand {
 	@NotEmpty(message = "Action can not be empty")
 	@Enum(clazz = ActionType.class, message = "Action should be instance of ActionType enum")
 	String action;

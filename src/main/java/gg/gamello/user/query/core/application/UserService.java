@@ -8,14 +8,14 @@ import gg.gamello.user.command.confirmation.infrastructure.exception.OutdatedCon
 import gg.gamello.user.command.core.domain.User;
 import gg.gamello.user.command.core.domain.UserRepository;
 import gg.gamello.user.command.core.domain.confirmation.Confirmation;
+import gg.gamello.user.command.core.infrastructure.exception.PropertyConflictException;
+import gg.gamello.user.command.core.infrastructure.exception.UserAlreadyExistsException;
 import gg.gamello.user.command.core.infrastructure.exception.UserDoesNotExistsException;
 import gg.gamello.user.command.core.infrastructure.exception.UserIsNotActiveException;
 import gg.gamello.user.infrastructure.security.AuthenticationContainer;
 import gg.gamello.user.query.core.application.dto.UserDto;
 import gg.gamello.user.query.core.application.dto.UserDtoAssembler;
-import gg.gamello.user.query.core.application.query.CheckSecretQuery;
-import gg.gamello.user.query.core.application.query.CredentialsQuery;
-import gg.gamello.user.query.core.application.query.UsersQuery;
+import gg.gamello.user.query.core.application.query.*;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -89,15 +89,25 @@ public class UserService {
 		return users;
 	}
 
-	public void checkSecret(CheckSecretQuery command)
+	public void checkSecret(SecretCheckQuery query)
 			throws IncorrectSecretException, ConfirmationDoesNotExistsException, OutdatedConfirmationException {
 		var confirmationCommand = ConfirmationCommand.builder()
-				.userId(command.getUserId())
-				.secret(command.getSecret())
-				.action(ActionType.valueOf(command.getAction()))
+				.userId(query.getUserId())
+				.secret(query.getSecret())
+				.action(ActionType.valueOf(query.getAction()))
 				.build();
 
 		confirmation.check(confirmationCommand);
+	}
+
+	public void checkUsername(UsernameCheckQuery query) throws PropertyConflictException {
+		if (userRepository.existsByUsername(query.getUsername()))
+			throw new UserAlreadyExistsException("User with username " + query.getUsername() + " already exists");
+	}
+
+	public void checkSlug(SlugCheckQuery query) throws PropertyConflictException {
+		if (userRepository.existsBySlug(query.getSlug()))
+			throw new UserAlreadyExistsException("User with slug " + query.getSlug() + " already exists");
 	}
 
 	public UserDto authenticateCredentials(CredentialsQuery command) throws UserDoesNotExistsException, UserIsNotActiveException {
