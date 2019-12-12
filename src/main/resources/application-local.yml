@@ -9,7 +9,7 @@ spring:
         hibernate:
             ddl-auto: create-drop
     cache:
-        type: redis
+        type: simple
         redis:
             time-to-live: 3600
     redis:

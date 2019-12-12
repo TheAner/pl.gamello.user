@@ -13,7 +13,7 @@ spring:
         redis:
             time-to-live: 3600
     redis:
-        host: general.fyeghj.ng.0001.euc1.cache.amazonaws.com
+        host: general.fyeghj.0001.euc1.cache.amazonaws.com
         port: 6379
 aws:
     access: AKIARYQQ3CL4AK5IW57G
