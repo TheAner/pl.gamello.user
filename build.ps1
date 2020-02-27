@@ -8,7 +8,7 @@
 $appName = "user"
 $appVersion = "0.4.1"
 $appService = "gamello"
-$ecrUrl = "121368154872.dkr.ecr.eu-central-1.amazonaws.com"
+$ecrUrl = ""
 #-------------------------------------------------------------
 $ErrorActionPreference = "Stop"
 
